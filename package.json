@@ -1,0 +1,43 @@
+{
+    "name": "jsedn",
+
+    "description": "js implementation of edn",
+
+    "version": "0.0.1",
+
+    "keywords": ["lisp", "clojure", "edn"],
+
+    "maintainers": [{
+        "name": "Shaun Gilchrist",
+        "email": "shaunxcode@gmail.com",
+        "web": "http://order-of-no.posterous.com"
+    }], 
+
+    "contributors": [{
+        "name": "Shaun Gilchrist",
+        "email": "shaunxcode@gmail.com",
+        "web": "http://order-of-no.posterous.com"
+    }], 
+
+    "bugs": "http://www.github.com/shaunxcode/jsedn/issues",
+
+    "licenses": [{
+        "type": "MIT",
+        "url": "http://www.opensource.org/licenses/mit-license.php"
+    }],
+
+    "repositories": [{
+        "type": "git",
+        "url": "http://www.github.com/shaunxcode/jsedn"
+    }],
+
+    "devDependencies": {
+		"coffee-script": "latest"
+    },
+
+	"dependencies": {
+	},
+	
+	"bin": {
+    } 
+}
