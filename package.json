@@ -32,7 +32,8 @@
     }],
 
     "devDependencies": {
-		"coffee-script": "latest"
+		"coffee-script": "latest",
+        "underscore": "latest"
     },
 
 	"dependencies": {

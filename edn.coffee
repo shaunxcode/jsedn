@@ -1,13 +1,26 @@
-#based on the work of martin keefe: http://martinkeefe.com/dcpl/sexp_lib.html
-specialChars = '() \t\n\r'
-parens = '()'
-openParen = '('
-closeParen = ')'
-
-class StringObj 
-	constructor: (@val) -> 
+class Prim
+	constructor: (@val) ->
+	value: -> @val
+	toString: -> JSON.stringify @val
+	
+class StringObj extends Prim 
 	toString: -> @val
 	
+class List extends Prim
+
+class Vector extends Prim
+
+class Map extends Prim
+			
+#based on the work of martin keefe: http://martinkeefe.com/dcpl/sexp_lib.html
+parens = '()[]{}'
+specialChars = parens + ' \t\n\r'
+
+parenTypes = 
+	'(' : closing: ')', class: List
+	'[' : closing: ']', class: Vector
+	'{' : closing: '}', class: Map
+
 lex = (string) ->
 	list = []
 	token = ''
@@ -41,15 +54,16 @@ read = (tokens) ->
 	read_ahead = (token) ->
 		if token is undefined then return
 
-		if token is openParen
+		if paren = parenTypes[token]
+			closeParen = paren.closing
 			L = []
 			while true
 				token = tokens.shift()
 				if token is undefined then throw 'unexpected end of list'
 
-				if token is closeParen then return L else L.push read_ahead token
+				if token is paren.closing then return (new paren.class L) else L.push read_ahead token
 
-		else if token is closeParen then throw 'unexpected )'
+		else if token in ")]}" then throw "unexpected #{token}"
 
 		else return handle token
 
@@ -74,7 +88,13 @@ handlers = [
 	[/^\\tab$/, handlerActions.tab = (token) -> "\t"]
 	[/^\\newline$/, handlerActions.newLine = (token) -> "\n"]
 	[/^\\space$/, handlerActions.space = (token) -> " "]
+	[/^\:.*$/, handlerActions.keyword = (token) -> token[1..-1]]
+	[/^\-?[0-9]*$/, handlerActions.integer = (token) -> parseInt token]
+	[/^\-?[0-9]*\.[0-9]*$/, handlerActions.float = (token) -> parseFloat token]
 ]
 
+exports.List = List
+exports.Vector = Vector
+exports.Map = Map
 exports.setHandlerAction = (handler, action) -> handlerActions[handler] = action
 exports.parse = (string) -> read lex string

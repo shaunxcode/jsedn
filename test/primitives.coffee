@@ -1,12 +1,19 @@
 edn = require "../edn"
+us = require "underscore"
 
+passed = 0
+failed = 0
 #simple unit testing
-isVal = (val) -> (comp) -> comp is val
-isNotVal = (val) -> (comp) -> comp isnt val
+isVal = (val) -> (comp) -> 
+    console.log comp
+    us.isEqual comp, val
+isNotVal = (val) -> (comp) -> not us.isEqual comp, val
 assert = (desc, str, pred) -> 
     if pred edn.parse str
+        passed++
         console.log "[OK]", desc, "\n"
     else
+        failed++
         console.log "[FAIL]", desc, "\n"
 
 #nil
@@ -61,11 +68,11 @@ assert '\\tab is a tab',
     isVal "\t"
 
 assert '\\newline is a newline',
-    '\\newline',
+    '\\newline'
     isVal "\n"
 
 assert '\\space is a space',
-    '\\space', 
+    '\\space' 
     isVal " "
 
 #symbols
@@ -73,25 +80,75 @@ assert '\\space is a space',
 # contain alphanumeric characters and . * + ! - _ ?. 
 # If - or . are the first character, the second character must be non-numeric. 
 # Additionally, : # are allowed as constituent characters in symbols but not as the first character.
+assert "basic symbol 'cat' should be 'cat'",
+    'cat'
+    isVal 'cat'
+
+assert "symbol with special characters 'cat*rat-bat'",
+    'cat*rat-bat'
+    isVal 'cat*rat-bat'
+
+assert "symbol with colon and hash in middle 'cat:rat#bat'",
+    'cat:rat#bat'
+    isVal 'cat:rat#bat'
 
 #keywords
 # :fred or :my/fred
+assert "keyword starts with colon :fred is fred",
+    ':fred'
+    isVal 'fred'
+
+
+assert "keyword can have slash :community/name", 
+    ':community/name'
+    isVal 'community/name'
 
 #integers
 # 0 - 9, optionally prefixed by - to indicate a negative number.
 # the suffix N to indicate that arbitrary precision is desired.
+assert "0 is 0",
+    '0'
+    isVal 0
+
+assert "9923 is 9923",
+    '9923'
+    isVal 9923
+
+assert "-9923 is -9923",
+    '-9923'
+    isVal -9923
 
 #floating point numbers
 # integers with frac e.g. 12.32
+assert "12.32 is 12.32",
+    '12.32'
+    isVal 12.32
+
+assert "-12.32 is -12.32",
+    '-12.32'
+    isVal -12.32
 
 #lists
 # (a b 42)
+assert "basic list (a b 42) works",
+    '(a b 42)'
+    isVal new edn.List ['a', 'b', 42]
+
+assert "nested list (a (b 42 (c d)))",
+    '(a (b 42 (c d)))'
+    isVal new edn.List ['a', new edn.List ['b', 42, new edn.List ['c', 'd']]]
 
 #vectors
 # [a b 42]
+assert "vector works [a b c]",
+    '[a b c]'
+    isVal new edn.Vector ['a', 'b', 'c']
 
 #maps
 # {:a 1, "foo" :bar, [1 2 3] four}
+assert "kv pairs in map work {:a 1 :b 2}",
+    '{:a 1 :b 2}'
+    isVal new edn.Map ["a", 1, "b", 2] 
 
 #sets
 # #{a b [1 2 3]}
@@ -101,3 +158,4 @@ assert '\\space is a space',
 # #inst "1985-04-12T23:20:50.52Z"
 # #uuid "f81d4fae-7dec-11d0-a765-00a0c91e6bf6"
 
+console.log "PASSED: #{passed}/#{passed + failed}"
