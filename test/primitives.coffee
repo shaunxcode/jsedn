@@ -4,17 +4,15 @@ us = require "underscore"
 passed = 0
 failed = 0
 #simple unit testing
-isVal = (val) -> (comp) -> 
-    console.log comp
-    us.isEqual comp, val
+isVal = (val) -> (comp) -> us.isEqual comp, val
 isNotVal = (val) -> (comp) -> not us.isEqual comp, val
 assert = (desc, str, pred) -> 
     if pred edn.parse str
         passed++
-        console.log "[OK]", desc, "\n"
+        console.log "[OK]", desc
     else
         failed++
-        console.log "[FAIL]", desc, "\n"
+        console.log "[FAIL]", desc
 
 #nil
 # nil represents nil, null or nothing. It should be read as an object with similar meaning on the target platform.
@@ -152,10 +150,21 @@ assert "kv pairs in map work {:a 1 :b 2}",
 
 #sets
 # #{a b [1 2 3]}
+assert "basic set \#{1 2 3}",
+    '\#{1 2 3}'
+    isVal new edn.Set [1, 2, 3]
+
 
 #tagged elements
 # #myapp/Person {:first "Fred" :last "Mertz"}
 # #inst "1985-04-12T23:20:50.52Z"
 # #uuid "f81d4fae-7dec-11d0-a765-00a0c91e6bf6"
+assert 'basic tags work #myapp/Person {:first "Fred" :last "Mertz"}',
+    '#myapp/Person {:first "Fred" :last "Mertz"}'
+    isVal new edn.Tagged [(new edn.Tag "myapp/Person"), new edn.Map ["first", "Fred", "last", "Mertz"]]
+
+assert "bare tagged pair works",
+    '#inst "1985-04-12T23:20:50.52Z"'
+    isVal new edn.Tagged [(new edn.Tag "inst"), "1985-04-12T23:20:50.52Z"]
 
 console.log "PASSED: #{passed}/#{passed + failed}"

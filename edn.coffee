@@ -5,13 +5,22 @@ class Prim
 	
 class StringObj extends Prim 
 	toString: -> @val
+	is: (test) -> @val is test
 	
+class Tag extends StringObj
+
+class Tagged extends Prim
+	tag: -> @val[0]
+	obj: -> @val[1]
+
 class List extends Prim
 
 class Vector extends Prim
 
 class Map extends Prim
-			
+
+class Set extends Prim
+	
 #based on the work of martin keefe: http://martinkeefe.com/dcpl/sexp_lib.html
 parens = '()[]{}'
 specialChars = parens + ' \t\n\r'
@@ -25,7 +34,6 @@ lex = (string) ->
 	list = []
 	token = ''
 	for c in string
-
 		if c is '"'
 			if in_string?
 				list.push (new StringObj in_string)
@@ -50,7 +58,6 @@ lex = (string) ->
 
 #based roughly on the work of norvig from his lisp in python
 read = (tokens) ->
-	console.log JSON.stringify tokens
 	read_ahead = (token) ->
 		if token is undefined then return
 
@@ -65,7 +72,19 @@ read = (tokens) ->
 
 		else if token in ")]}" then throw "unexpected #{token}"
 
-		else return handle token
+		else
+			handledToken = handle token
+			if handledToken instanceof Tag
+				token = tokens.shift()
+				if token is undefined then throw 'was expecting something to follow a tag'
+				tagged = new Tagged [handledToken, read_ahead token]
+				if tagged.tag().is("")
+					if tagged.obj() instanceof Map
+						return new Set tagged.obj().value()
+					
+				return tagged
+			else
+				return handledToken
 
 	token1 = tokens.shift()
 	if token1 is undefined then return undefined else return read_ahead token1
@@ -91,10 +110,14 @@ handlers = [
 	[/^\:.*$/, handlerActions.keyword = (token) -> token[1..-1]]
 	[/^\-?[0-9]*$/, handlerActions.integer = (token) -> parseInt token]
 	[/^\-?[0-9]*\.[0-9]*$/, handlerActions.float = (token) -> parseFloat token]
+	[/^#.*$/, handlerActions.tagged = (token) -> new Tag token[1..-1]]
 ]
 
 exports.List = List
 exports.Vector = Vector
 exports.Map = Map
+exports.Set = Set
+exports.Tag = Tag
+exports.Tagged = Tagged
 exports.setHandlerAction = (handler, action) -> handlerActions[handler] = action
 exports.parse = (string) -> read lex string

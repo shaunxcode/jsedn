@@ -3,9 +3,9 @@
 
     "description": "js implementation of edn",
 
-    "version": "0.0.1",
+    "version": "0.0.2",
 
-    "keywords": ["lisp", "clojure", "edn"],
+    "keywords": ["lisp", "clojure", "edn", "serialization", "datomic"],
 
     "maintainers": [{
         "name": "Shaun Gilchrist",
