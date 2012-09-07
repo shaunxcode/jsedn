@@ -1,19 +1,27 @@
 edn = require "../edn"
 us = require "underscore"
 
+#simple unit testing
 passed = 0
 failed = 0
-#simple unit testing
+
 isVal = (val) -> (comp) -> us.isEqual comp, val
+
 isNotVal = (val) -> (comp) -> not us.isEqual comp, val
-assert = (desc, str, pred) -> 
-    if pred edn.parse str
+
+assert = (desc, str, pred) ->
+    try  
+        result = edn.parse str
+    catch e 
+        result = e
+
+    if pred result
         passed++
         console.log "[OK]", desc
     else
         failed++
         console.log "[FAIL]", desc
-
+        console.log "we got:", JSON.stringify result
 #nil
 # nil represents nil, null or nothing. It should be read as an object with similar meaning on the target platform.
 
@@ -148,12 +156,23 @@ assert "kv pairs in map work {:a 1 :b 2}",
     '{:a 1 :b 2}'
     isVal new edn.Map ["a", 1, "b", 2] 
 
+assert "anything can be a key",
+    '{[1 2 3] "some numbers"}'
+    isVal new edn.Map [(new edn.Vector [1, 2, 3]), "some numbers"]
+
+assert "even a map can be a key",
+    '{{:name "blue" :type "color"} [ocean sky moon]}'
+    isVal new edn.Map [(new edn.Map ["name", "blue", "type", "color"]), new edn.Vector ["ocean", "sky", "moon"]]
+
 #sets
 # #{a b [1 2 3]}
 assert "basic set \#{1 2 3}",
     '\#{1 2 3}'
     isVal new edn.Set [1, 2, 3]
 
+assert "a set is distinct",
+    '\#{1 1 2 3}'
+    isVal 'set not distinct'
 
 #tagged elements
 # #myapp/Person {:first "Fred" :last "Mertz"}

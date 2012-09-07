@@ -1,3 +1,5 @@
+us = require "underscore"
+
 class Prim
 	constructor: (@val) ->
 	value: -> @val
@@ -20,7 +22,12 @@ class Vector extends Prim
 class Map extends Prim
 
 class Set extends Prim
-	
+	constructor: (val) ->
+		@val = us.uniq val
+		
+		if not us.isEqual val, @val
+			throw "set not distinct"
+
 #based on the work of martin keefe: http://martinkeefe.com/dcpl/sexp_lib.html
 parens = '()[]{}'
 specialChars = parens + ' \t\n\r'
