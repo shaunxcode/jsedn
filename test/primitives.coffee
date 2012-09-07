@@ -186,6 +186,10 @@ assert "bare tagged pair works",
     '#inst "1985-04-12T23:20:50.52Z"'
     isVal new edn.Tagged [(new edn.Tag "inst"), "1985-04-12T23:20:50.52Z"]
 
+assert "tagged elements in a vector",
+	"[a b #animal/cat rodger c d]"
+	isVal new edn.Vector ["a", "b", (new edn.Tagged [(new edn.Tag "animal/cat"), "rodger"]), "c", "d"]
+	
 #Comments
 #If a ; character is encountered outside of a string, that character 
 #and all subsequent characters to the next newline should be ignored.
@@ -200,5 +204,18 @@ assert "there can be inline comments",
 assert "whitespace does not affect comments",
 	"[valid;touching trailing comment\nmore items]"
 	isVal new edn.Vector ["valid", "more", "items"]
+	
+#Discard
+#If the sequence #_ is encountered outside of a string, symbol or keyword, 
+#the next element should be read and discarded. Note that the next element 
+#must still be a readable element. A reader should not call user-supplied 
+#tag handlers during the processing of the element to be discarded.
+assert "discarding item in vector",
+	"[a b #_ c d]"
+	isVal new edn.Vector ["a", "b", "d"]
+
+assert "discard an item outside of form",
+	"#_ a"
+	isVal ""
 	
 console.log "PASSED: #{passed}/#{passed + failed}"

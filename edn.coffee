@@ -1,7 +1,12 @@
 us = require "underscore"
 
 class Prim
-	constructor: (@val) ->
+	constructor: (val) ->
+		if us.isArray val
+			@val = us.filter val, (x) -> not (x instanceof Discard)
+		else
+			@val = val
+			
 	value: -> @val
 	toString: -> JSON.stringify @val
 	
@@ -15,6 +20,8 @@ class Tagged extends Prim
 	tag: -> @val[0]
 	obj: -> @val[1]
 
+class Discard
+	
 class List extends Prim
 
 class Vector extends Prim
@@ -99,13 +106,22 @@ read = (tokens) ->
 				if tagged.tag().is("")
 					if tagged.obj() instanceof Map
 						return new Set tagged.obj().value()
+				
+				if tagged.tag().is("_")
+					return new Discard
 					
 				return tagged
 			else
 				return handledToken
 
 	token1 = tokens.shift()
-	if token1 is undefined then return undefined else return read_ahead token1
+	if token1 is undefined
+		return undefined 
+	else
+		result = read_ahead token1
+		if result instanceof Discard 
+			return ""
+		return result
 
 handle = (token) ->
 	if token instanceof StringObj
