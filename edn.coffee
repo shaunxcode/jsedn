@@ -41,6 +41,17 @@ lex = (string) ->
 	list = []
 	token = ''
 	for c in string
+		if not in_string? and c is ";"
+			in_comment = true
+			
+		if in_comment
+			if c is "\n"
+				in_comment = undefined
+				if token 
+					list.push token
+					token = ''
+			continue
+			
 		if c is '"'
 			if in_string?
 				list.push (new StringObj in_string)

@@ -186,4 +186,19 @@ assert "bare tagged pair works",
     '#inst "1985-04-12T23:20:50.52Z"'
     isVal new edn.Tagged [(new edn.Tag "inst"), "1985-04-12T23:20:50.52Z"]
 
+#Comments
+#If a ; character is encountered outside of a string, that character 
+#and all subsequent characters to the next newline should be ignored.
+assert "there can be comments in a vector",
+	"[valid vector\n;;comment in vector\nmore vector items]"
+	isVal new edn.Vector ["valid", "vector", "more", "vector", "items"]
+
+assert "there can be inline comments",
+	"[valid ;comment\n more items]"
+	isVal new edn.Vector ["valid", "more", "items"]
+
+assert "whitespace does not affect comments",
+	"[valid;touching trailing comment\nmore items]"
+	isVal new edn.Vector ["valid", "more", "items"]
+	
 console.log "PASSED: #{passed}/#{passed + failed}"
