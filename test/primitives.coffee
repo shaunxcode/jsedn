@@ -218,4 +218,22 @@ assert "discard an item outside of form",
 	"#_ a"
 	isVal ""
 	
+assert "discard touches an item",
+	"[a b #_c d]"
+	isVal new edn.Vector ["a", "b", "d"]
+
+assert "discard an entire form",
+	"[a b #_ [a b] c d]"
+	isVal new edn.Vector ["a", "b", "c", "d"]
+
+assert "discard with a comment",
+	"[a #_ ;we are discarding what comes next\n c d]"
+	isVal new edn.Vector ["a", "d"]
+
+#Whitespace
+#commas are whitespace 
+assert "no one cares about commas",
+	"[a ,,,,,, b,,,,,c ,d]"
+	isVal new edn.Vector ["a", "b", "c", "d"]
+	
 console.log "PASSED: #{passed}/#{passed + failed}"

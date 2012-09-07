@@ -37,7 +37,7 @@ class Set extends Prim
 
 #based on the work of martin keefe: http://martinkeefe.com/dcpl/sexp_lib.html
 parens = '()[]{}'
-specialChars = parens + ' \t\n\r'
+specialChars = parens + ' \t\n\r,'
 
 parenTypes = 
 	'(' : closing: ')', class: List
@@ -76,7 +76,12 @@ lex = (string) ->
 			if c in parens
 				list.push c
 		else
+			if token is "#_"
+				list.push token
+				token = ''			
 			token += c
+
+				
 	if token
 		list.push(token)
 	list
