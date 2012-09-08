@@ -1,14 +1,47 @@
 #!/usr/bin/env node
 
 var program = require('commander');
-var edn = require('jsedn');
+var edn = require('../edn');
+
+var stopWaiting = setTimeout(function(){
+	console.log("Did not receive input from pipe");
+	process.stdin.destroy();
+}, 500);
 
 program
 	.version('0.0.6')
+	.option('-s, --select [path]', 'select')
 	.parse(process.argv);
 
 process.stdin.resume();
 process.stdin.setEncoding('utf8');
-process.stdin.on('data', function(data){
-	console.log(edn.encode(edn.parse(data)));
+
+var input = ''
+
+process.stdin.on('data', function(data) {
+	clearTimeout(stopWaiting);
+	
+	input += data;
+});
+
+process.stdin.on('end', function() {
+	var parsed = edn.parse(input);
+	if (program.select) {
+		var path = program.select.trim().replace(/[ ]{2,}/g, ' ').split(' ');
+		var value = parsed;
+		for (var partIndex in path) {
+			var part = path[partIndex];
+			if (value.exists) {
+				if (value.exists(part) !== undefined) {
+					value = value.at(part);
+				} else {
+					throw "Could not find " + part;
+				}
+			} else {
+				throw "Not a composite object";
+			}
+		}
+		console.log(path.join(' ') + " => " + edn.encode(value));
+	}
+	process.stdin.destroy();
 });

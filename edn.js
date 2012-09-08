@@ -105,6 +105,16 @@
       })).join(" ");
     };
 
+    Iterable.prototype.exists = function(index) {
+      return this.val[index] != null;
+    };
+
+    Iterable.prototype.at = function(index) {
+      if (this.exists(index)) {
+        return this.val[index];
+      }
+    };
+
     return Iterable;
 
   })(Prim);

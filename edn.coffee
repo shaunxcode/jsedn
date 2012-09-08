@@ -25,7 +25,13 @@ class Discard
 class Iterable extends Prim
 	ednEncode: ->
 		(@map (i) -> encode i).join " "
-		
+	
+	exists: (index) ->
+		@val[index]?
+
+	at: (index) ->
+		if @exists index then @val[index]
+
 methods = [
 	'forEach', 'each', 'map', 'reduce', 'reduceRight', 'find'
 	'detect', 'filter', 'select', 'reject', 'every', 'all', 'some', 'any'
