@@ -21,19 +21,74 @@ class Tagged extends Prim
 	obj: -> @val[1]
 
 class Discard
-	
-class List extends Prim
 
-class Vector extends Prim
-
-class Map extends Prim
-
-class Set extends Prim
-	constructor: (val) ->
-		@val = us.uniq val
+class Iterable extends Prim
+	ednEncode: ->
+		(@map (i) -> encode i).join " "
 		
+methods = [
+	'forEach', 'each', 'map', 'reduce', 'reduceRight', 'find'
+	'detect', 'filter', 'select', 'reject', 'every', 'all', 'some', 'any'
+	'include', 'contains', 'invoke', 'max', 'min', 'sortBy', 'sortedIndex'
+	'toArray', 'size', 'first', 'initial', 'rest', 'last', 'without', 'indexOf'
+	'shuffle', 'lastIndexOf', 'isEmpty', 'groupBy'
+]
+	
+for method in methods
+	do (method) ->
+		Iterable.prototype[method] = -> 
+			us[method].apply us, [@val].concat(us.toArray arguments)
+
+for method in ['concat', 'join', 'slice']
+	do (method) ->
+		Iterable.prototype[method] = ->
+			Array.prototype[method].apply @val, arguments
+
+class List extends Iterable
+	ednEncode: ->
+		"(#{super()})"
+		
+class Vector extends Iterable
+	ednEncode: ->
+		"[#{super()}]"
+
+class Set extends Iterable
+	ednEncode: ->
+		"\#{#{super()}}"
+			
+	constructor: (val) ->
+		super()
+		@val = us.uniq val
+
 		if not us.isEqual val, @val
 			throw "set not distinct"
+
+class Map extends Prim
+	ednEncode: ->
+		"{#{(encode i for i in @val).join " "}}"
+		
+	constructor: (@val) ->
+		@keys = []
+		@vals = []
+		
+		for v, i in @val
+			if i % 2 is 0
+				@keys.push v
+			else
+				@vals.push v
+
+	exists: (key) ->
+		for k, i in @keys
+			if us.isEqual k, key
+				return i
+				
+		return undefined
+		
+	at: (key) ->
+		if (id = @exists key)?
+			@vals[id]
+		else
+			throw "key does not exist"
 
 #based on the work of martin keefe: http://martinkeefe.com/dcpl/sexp_lib.html
 parens = '()[]{}'
@@ -132,31 +187,72 @@ handle = (token) ->
 	if token instanceof StringObj
 		return token.toString()
 		
-	for handler in handlers
-		[rxp, action] = handler
-		if rxp.test token
-			return action token
+	for name, handler of tokenHandlers
+		if handler.pattern.test token
+			return handler.action token
 	token
 
-handlerActions = {}
-handlers = [
-	[/^nil$/, handlerActions.nil = (token) -> null]
-	[/^true$|^false$/, handlerActions.boolean = (token) -> token is "true"]
-	[/^\\[A-z0-9]$/, handlerActions.character = (token) -> token[-1..-1]]
-	[/^\\tab$/, handlerActions.tab = (token) -> "\t"]
-	[/^\\newline$/, handlerActions.newLine = (token) -> "\n"]
-	[/^\\space$/, handlerActions.space = (token) -> " "]
-	[/^\:.*$/, handlerActions.keyword = (token) -> token[1..-1]]
-	[/^\-?[0-9]*$/, handlerActions.integer = (token) -> parseInt token]
-	[/^\-?[0-9]*\.[0-9]*$/, handlerActions.float = (token) -> parseFloat token]
-	[/^#.*$/, handlerActions.tagged = (token) -> new Tag token[1..-1]]
-]
+tokenHandlers =
+	nil:       pattern: /^nil$/,               action: (token) -> null
+	boolean:   pattern: /^true$|^false$/,      action: (token) -> token is "true"
+	character: pattern: /^\\[A-z0-9]$/,        action: (token) -> token[-1..-1]
+	tab:       pattern: /^\\tab$/,             action: (token) -> "\t"
+	newLine:   pattern: /^\\newline$/,         action: (token) -> "\n"
+	space:     pattern: /^\\space$/,           action: (token) -> " "
+	keyword:   pattern: /^\:.*$/,              action: (token) -> token[1..-1]
+	integer:   pattern: /^\-?[0-9]*$/,         action: (token) -> parseInt token
+	float:     pattern: /^\-?[0-9]*\.[0-9]*$/, action: (token) -> parseFloat token
+	tagged:    pattern: /^#.*$/,               action: (token) -> new Tag token[1..-1]
 
+isKeyword = (str) ->
+	(" " not in str) and (tokenHandlers.keyword.pattern.test str)
+		
+encode = (obj, prim = true) ->
+	if obj.ednEncode?
+		obj.ednEncode()
+
+	else if us.isArray obj
+		result = []
+		for v in obj
+			result.push encode v, prim
+		"(#{result.join " "})"
+			
+	else if tokenHandlers.integer.pattern.test "#{obj}"
+		parseInt obj
+
+	else if tokenHandlers.float.pattern.test "#{obj}"
+		parseFloat obj
+
+	else if us.isString obj
+	
+		if prim and isKeyword ":#{obj}"
+			":#{obj}"
+		else
+			"\"#{obj.toString()}\""
+
+	else if us.isBoolean obj
+		if obj 
+			"true"
+		else
+			"false"
+
+	else if us.isNull obj
+		"nil"
+
+	else if us.isObject
+		result = []
+		for k, v of obj
+			result.push encode k, true
+			result.push encode v, true
+		"{#{result.join " "}}"
+	
 exports.List = List
 exports.Vector = Vector
 exports.Map = Map
 exports.Set = Set
 exports.Tag = Tag
 exports.Tagged = Tagged
-exports.setHandlerAction = (handler, action) -> handlerActions[handler] = action
+exports.setTokenPattern = (handler, pattern) -> tokenHandlers[handler].pattern = pattern
+exports.setTokenAction = (handler, action) -> tokenHandlers[handler].action = action
 exports.parse = (string) -> read lex string
+exports.encode = encode

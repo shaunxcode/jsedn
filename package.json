@@ -1,44 +1,47 @@
 {
-    "name": "jsedn",
+	"name": "jsedn",
 
-    "description": "js implementation of edn",
+	"description": "js implementation of edn",
 
-    "version": "0.0.2",
+	"version": "0.0.5",
 
-    "keywords": ["lisp", "clojure", "edn", "serialization", "datomic"],
+	"keywords": ["lisp", "clojure", "edn", "serialization", "datomic"],
 
-    "maintainers": [{
-        "name": "Shaun Gilchrist",
-        "email": "shaunxcode@gmail.com",
-        "web": "http://order-of-no.posterous.com"
-    }], 
+	"maintainers": [{
+		"name": "Shaun Gilchrist",
+		"email": "shaunxcode@gmail.com",
+		"web": "http://order-of-no.posterous.com"
+	}], 
 
-    "contributors": [{
-        "name": "Shaun Gilchrist",
-        "email": "shaunxcode@gmail.com",
-        "web": "http://order-of-no.posterous.com"
-    }], 
+	"contributors": [{
+		"name": "Shaun Gilchrist",
+		"email": "shaunxcode@gmail.com",
+		"web": "http://order-of-no.posterous.com"
+	}], 
 
-    "bugs": "http://www.github.com/shaunxcode/jsedn/issues",
+	"bugs": "http://www.github.com/shaunxcode/jsedn/issues",
 
-    "licenses": [{
-        "type": "MIT",
-        "url": "http://www.opensource.org/licenses/mit-license.php"
-    }],
+	"licenses": [{
+		"type": "MIT",
+		"url": "http://www.opensource.org/licenses/mit-license.php"
+	}],
 
-    "repositories": [{
-        "type": "git",
-        "url": "http://www.github.com/shaunxcode/jsedn"
-    }],
+	"repositories": [{
+		"type": "git",
+		"url": "http://www.github.com/shaunxcode/jsedn"
+	}],
 
-    "devDependencies": {
+	"devDependencies": {
 		"coffee-script": "latest",
-        "underscore": "latest"
-    },
+		"underscore": "latest"
+	},
 
 	"dependencies": {
+		"underscore": "latest"
 	},
 	
 	"bin": {
-    } 
+	},
+	
+	"main": "edn.js"
 }
