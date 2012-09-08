@@ -1,0 +1,14 @@
+#!/usr/bin/env node
+
+var program = require('commander');
+var edn = require('jsedn');
+
+program
+	.version('0.0.6')
+	.parse(process.argv);
+
+process.stdin.resume();
+process.stdin.setEncoding('utf8');
+process.stdin.on('data', function(data){
+	console.log(edn.encode(edn.parse(data)));
+});
