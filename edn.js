@@ -89,6 +89,12 @@
       return "\#" + (this.tag().dn()) + " " + (encode(this.obj()));
     };
 
+    Tagged.prototype.jsonEncode = function() {
+      return {
+        Tagged: [this.tag().dn(), this.obj().jsonEncode != null ? this.obj().jsonEncode() : this.obj()]
+      };
+    };
+
     Tagged.prototype.tag = function() {
       return this._tag;
     };

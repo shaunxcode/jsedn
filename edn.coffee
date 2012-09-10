@@ -28,6 +28,9 @@ class Tagged extends Prim
 	ednEncode: ->
 		"\##{@tag().dn()} #{encode @obj()}"
 
+	jsonEncode: ->
+		Tagged: [@tag().dn(), if @obj().jsonEncode? then @obj().jsonEncode() else @obj()]
+
 	tag: -> @_tag
 	obj: -> @_obj
 
