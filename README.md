@@ -31,7 +31,7 @@ Will output ```{:a 1 :country/id 333}```. Finally lets encode js into edn then b
 Will output ```["electric", "pink"]```. Definitely working in both directions. 
 
 ###Command Line
-If you have installed via npm you will have a jsedn script that accepts input via pipe/stdin. Currently takes -s flag for "select" which you pass a path separated by space. -j encodes input as JSON.
+If you have installed via npm you will have a jsedn script that accepts input via pipe/stdin. Currently takes -s flag for "select" which you pass a path separated by space. -j encodes input as JSON. -p indicates pretty print for json output.
 
 	> echo "{:a first-item :b [{:name :walter :age 50 :kids [:A :B :C]}]}" | jsedn -s "b 0 kids 2"
 	outputs: b 0 kids 2 => :C

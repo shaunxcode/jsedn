@@ -609,11 +609,15 @@
     }
   };
 
-  encodeJson = function(obj) {
+  encodeJson = function(obj, prettyPrint) {
     if (obj.jsonEncode != null) {
-      return encodeJson(obj.jsonEncode());
+      return encodeJson(obj.jsonEncode(), prettyPrint);
     }
-    return JSON.stringify(obj);
+    if (prettyPrint) {
+      return JSON.stringify(obj, null, 4);
+    } else {
+      return JSON.stringify(obj);
+    }
   };
 
   exports.List = List;

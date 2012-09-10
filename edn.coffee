@@ -304,12 +304,15 @@ encode = (obj, prim = true) ->
 			result.push encode v, true
 		"{#{result.join " "}}"
 
-encodeJson = (obj) ->
+encodeJson = (obj, prettyPrint) ->
 	if obj.jsonEncode?
-		return encodeJson obj.jsonEncode()
+		return encodeJson obj.jsonEncode(), prettyPrint
 
-	JSON.stringify obj
-	
+	if prettyPrint
+		JSON.stringify obj, null, 4
+	else 
+		JSON.stringify obj
+		
 exports.List = List
 exports.Vector = Vector
 exports.Map = Map

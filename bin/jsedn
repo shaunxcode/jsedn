@@ -9,9 +9,10 @@ var stopWaiting = setTimeout(function(){
 }, 500);
 
 program
-	.version('0.0.6')
+	.version('0.0.9')
 	.option('-s, --select [path]', 'select')
 	.option('-j, --json', 'json')
+	.option('-p, --pretty', 'pretty')
 	.parse(process.argv);
 
 process.stdin.resume();
@@ -44,7 +45,7 @@ process.stdin.on('end', function() {
 		}
 		console.log(path.join(' ') + " => " + edn.encode(value));
 	} else if (program.json) {
-		console.log(edn.encodeJson(parsed));
+		console.log(edn.encodeJson(parsed, program.pretty));
 	} else {
 		console.log(edn.encode(parsed));
 	}
