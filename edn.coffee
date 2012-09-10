@@ -14,11 +14,22 @@ class StringObj extends Prim
 	toString: -> @val
 	is: (test) -> @val is test
 	
-class Tag extends StringObj
-
+class Tag
+	constructor: (@namespace, @name...) ->
+		if arguments.length is 1
+			[@namespace, @name...] = arguments[0].split('/')
+			
+	ns: -> @namespace
+	dn: -> [@namespace].concat(@name).join('/')
+	
 class Tagged extends Prim
-	tag: -> @val[0]
-	obj: -> @val[1]
+	constructor: (@_tag, @_obj) ->
+
+	ednEncode: ->
+		"\##{@tag().dn()} #{encode @obj()}"
+
+	tag: -> @_tag
+	obj: -> @_obj
 
 class Discard
 
@@ -26,6 +37,9 @@ class Iterable extends Prim
 	ednEncode: ->
 		(@map (i) -> encode i).join " "
 	
+	jsonEncode: ->
+		(@map (i) -> if i.jsonEncode? then i.jsonEncode() else i)
+
 	exists: (index) ->
 		@val[index]?
 
@@ -53,15 +67,24 @@ for method in ['concat', 'join', 'slice']
 class List extends Iterable
 	ednEncode: ->
 		"(#{super()})"
+
+	jsonEncode: ->
+		List: super()
 		
 class Vector extends Iterable
 	ednEncode: ->
 		"[#{super()}]"
 
+	jsonEncode: ->
+		Vector: super()
+		
 class Set extends Iterable
 	ednEncode: ->
 		"\#{#{super()}}"
-			
+
+	jsonEncode: ->
+		Set: super()
+
 	constructor: (val) ->
 		super()
 		@val = us.uniq val
@@ -69,10 +92,13 @@ class Set extends Iterable
 		if not us.isEqual val, @val
 			throw "set not distinct"
 
-class Map extends Prim
+class Map
 	ednEncode: ->
-		"{#{(encode i for i in @val).join " "}}"
-		
+		"{#{(encode i for i in @value()).join " "}}"
+	
+	jsonEncode: -> 
+		{Map: ((if i.jsonEncode? then i.jsonEncode() else i) for i in @value())}
+
 	constructor: (@val) ->
 		@keys = []
 		@vals = []
@@ -83,6 +109,15 @@ class Map extends Prim
 			else
 				@vals.push v
 
+		@val = false
+	
+	value: -> 
+		result = []
+		for v, i in @keys
+			result.push v
+			if @vals[i]? then result.push @vals[i]
+		result
+		
 	exists: (key) ->
 		for k, i in @keys
 			if us.isEqual k, key
@@ -95,6 +130,15 @@ class Map extends Prim
 			@vals[id]
 		else
 			throw "key does not exist"
+
+	set: (key, val) ->
+		if (id = @exists key)?
+			@vals[id] = val
+		else
+			@keys.push key
+			@vals.push val
+			
+		this
 
 #based on the work of martin keefe: http://martinkeefe.com/dcpl/sexp_lib.html
 parens = '()[]{}'
@@ -168,14 +212,17 @@ read = (tokens) ->
 			if handledToken instanceof Tag
 				token = tokens.shift()
 				if token is undefined then throw 'was expecting something to follow a tag'
-				tagged = new Tagged [handledToken, read_ahead token]
-				if tagged.tag().is("")
+				tagged = new Tagged handledToken, read_ahead token
+				if tagged.tag().dn() is ""
 					if tagged.obj() instanceof Map
 						return new Set tagged.obj().value()
 				
-				if tagged.tag().is("_")
+				if tagged.tag().dn() is "_"
 					return new Discard
-					
+				
+				if tagActions[tagged.tag().dn()]?
+					return tagActions[tagged.tag().dn()].action tagged.obj()
+				
 				return tagged
 			else
 				return handledToken
@@ -210,6 +257,11 @@ tokenHandlers =
 	float:     pattern: /^\-?[0-9]*\.[0-9]*$/, action: (token) -> parseFloat token
 	tagged:    pattern: /^#.*$/,               action: (token) -> new Tag token[1..-1]
 
+tagActions = 
+		uuid: tag: (new Tag "uuid"), action: (obj) -> obj
+		inst: tag: (new Tag "inst"), action: (obj) -> obj
+
+#ENCODING
 isKeyword = (str) ->
 	(" " not in str) and (tokenHandlers.keyword.pattern.test str)
 		
@@ -251,6 +303,12 @@ encode = (obj, prim = true) ->
 			result.push encode k, true
 			result.push encode v, true
 		"{#{result.join " "}}"
+
+encodeJson = (obj) ->
+	if obj.jsonEncode?
+		return encodeJson obj.jsonEncode()
+
+	JSON.stringify obj
 	
 exports.List = List
 exports.Vector = Vector
@@ -258,7 +316,9 @@ exports.Map = Map
 exports.Set = Set
 exports.Tag = Tag
 exports.Tagged = Tagged
+exports.setTagAction = (tag, action) -> tagActions[tag.dn()] = tag: tag, action: action
 exports.setTokenPattern = (handler, pattern) -> tokenHandlers[handler].pattern = pattern
 exports.setTokenAction = (handler, action) -> tokenHandlers[handler].action = action
 exports.parse = (string) -> read lex string
 exports.encode = encode
+exports.encodeJson = encodeJson

@@ -11,6 +11,7 @@ var stopWaiting = setTimeout(function(){
 program
 	.version('0.0.6')
 	.option('-s, --select [path]', 'select')
+	.option('-j, --json', 'json')
 	.parse(process.argv);
 
 process.stdin.resume();
@@ -42,6 +43,11 @@ process.stdin.on('end', function() {
 			}
 		}
 		console.log(path.join(' ') + " => " + edn.encode(value));
+	} else if (program.json) {
+		console.log(edn.encodeJson(parsed));
+	} else {
+		console.log(edn.encode(parsed));
 	}
+	
 	process.stdin.destroy();
 });

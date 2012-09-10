@@ -1,4 +1,4 @@
-edn = require "../edn"
+edn = require "../edn.coffee"
 us = require "underscore"
 
 #simple unit testing
@@ -189,16 +189,23 @@ assertParse "a set is distinct",
 # #uuid "f81d4fae-7dec-11d0-a765-00a0c91e6bf6"
 assertParse 'basic tags work #myapp/Person {:first "Fred" :last "Mertz"}',
 	'#myapp/Person {:first "Fred" :last "Mertz"}'
-	new edn.Tagged [(new edn.Tag "myapp/Person"), new edn.Map ["first", "Fred", "last", "Mertz"]]
+	new edn.Tagged (new edn.Tag "myapp", "Person"), new edn.Map ["first", "Fred", "last", "Mertz"]
 
-assertParse "bare tagged pair works",
-	'#inst "1985-04-12T23:20:50.52Z"'
-	new edn.Tagged [(new edn.Tag "inst"), "1985-04-12T23:20:50.52Z"]
+assertParse "unhandled tagged pair works",
+	'#some/inst "1985-04-12T23:20:50.52Z"'
+	new edn.Tagged (new edn.Tag "some", "inst"), "1985-04-12T23:20:50.52Z"
 
 assertParse "tagged elements in a vector",
 	"[a b #animal/cat rodger c d]"
-	new edn.Vector ["a", "b", (new edn.Tagged [(new edn.Tag "animal/cat"), "rodger"]), "c", "d"]
-	
+	new edn.Vector ["a", "b", (new edn.Tagged (new edn.Tag "animal", "cat"), "rodger"), "c", "d"]
+
+edn.setTagAction new edn.Tag("myApp", "Person"), (obj) -> 
+	obj.set "age", obj.at("age") + 100
+
+assertParse "tag actions are recognized", 
+	"#myApp/Person {:name :walter :age 500}"
+	new edn.Map ["name", "walter", "age", 600]
+
 #Comments
 #If a ; character is encountered outside of a string, that character 
 #and all subsequent characters to the next newline should be ignored.
@@ -282,5 +289,9 @@ assertEncode "can encode list of strings",
 assertEncode "can encode list of maps",
 	[{name: "walter", age: 30}, {name: "tony", age: 50, kids: ["a", "b", "c"]}]
 	"({:name :walter :age 30} {:name :tony :age 50 :kids (:a :b :c)})"
+
+assertEncode "can encode tagged items",
+	new edn.Tagged(new edn.Tag('myApp', 'Person'), {name: "walter", age: 30})
+	"#myApp/Person {:name :walter :age 30}"
 
 console.log "PASSED: #{passed}/#{passed + failed}"
