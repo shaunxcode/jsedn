@@ -29,21 +29,7 @@ process.stdin.on('data', function(data) {
 process.stdin.on('end', function() {
 	var parsed = edn.parse(input);
 	if (program.select) {
-		var path = program.select.trim().replace(/[ ]{2,}/g, ' ').split(' ');
-		var value = parsed;
-		for (var partIndex in path) {
-			var part = path[partIndex];
-			if (value.exists) {
-				if (value.exists(part) !== undefined) {
-					value = value.at(part);
-				} else {
-					throw "Could not find " + part;
-				}
-			} else {
-				throw "Not a composite object";
-			}
-		}
-		console.log(path.join(' ') + " => " + edn.encode(value));
+		console.log(program.select + " => " + edn.encode(edn.atPath(parsed, program.select)));
 	} else if (program.json) {
 		console.log(edn.encodeJson(parsed, program.pretty));
 	} else {

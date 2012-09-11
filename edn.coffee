@@ -30,7 +30,7 @@ class Tagged extends Prim
 
 	jsonEncode: ->
 		Tagged: [@tag().dn(), if @obj().jsonEncode? then @obj().jsonEncode() else @obj()]
-
+		
 	tag: -> @_tag
 	obj: -> @_obj
 
@@ -42,13 +42,21 @@ class Iterable extends Prim
 	
 	jsonEncode: ->
 		(@map (i) -> if i.jsonEncode? then i.jsonEncode() else i)
-
+	
+	jsEncode: ->
+		(@map (i) -> if i.jsEncode? then i.jsEncode() else i)
+		
 	exists: (index) ->
 		@val[index]?
 
 	at: (index) ->
 		if @exists index then @val[index]
 
+	set: (index, val) ->
+		@val[index] = val
+		
+		this
+		
 methods = [
 	'forEach', 'each', 'map', 'reduce', 'reduceRight', 'find'
 	'detect', 'filter', 'select', 'reject', 'every', 'all', 'some', 'any'
@@ -102,6 +110,14 @@ class Map
 	jsonEncode: -> 
 		{Map: ((if i.jsonEncode? then i.jsonEncode() else i) for i in @value())}
 
+	jsEncode: ->
+		result = {}
+		for k, i in @keys
+			hashId = if k.hashId? then k.hashId() else k 
+			result[hashId] = if @vals[i].jsEncode? then @vals[i].jsEncode() else @vals[i]
+
+		result
+		
 	constructor: (@val) ->
 		@keys = []
 		@vals = []
@@ -140,7 +156,7 @@ class Map
 		else
 			@keys.push key
 			@vals.push val
-			
+
 		this
 
 #based on the work of martin keefe: http://martinkeefe.com/dcpl/sexp_lib.html
@@ -325,6 +341,24 @@ exports.Tagged = Tagged
 exports.setTagAction = (tag, action) -> tagActions[tag.dn()] = tag: tag, action: action
 exports.setTokenPattern = (handler, pattern) -> tokenHandlers[handler].pattern = pattern
 exports.setTokenAction = (handler, action) -> tokenHandlers[handler].action = action
-exports.parse = (string) -> read lex string
+exports.parse = (string) -> read lex string 
 exports.encode = encode
 exports.encodeJson = encodeJson
+exports.atPath = (obj, path) -> 
+	path = path.trim().replace(/[ ]{2,}/g, ' ').split(' ')
+	value = obj
+	for part in path
+		if value.exists
+			if value.exists(part)?
+				value = value.at part 
+			else
+				throw "Could not find " + part
+		else
+			throw "Not a composite object"
+	value
+
+exports.toJS = (obj) ->
+	if obj.jsEncode?
+		obj.jsEncode()
+	else
+		obj

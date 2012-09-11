@@ -81,6 +81,29 @@ This is useful if you want to over-ride the naive implementations of Map etc.
 
 	edn.setTypeClass('List', MyListClass));
 
+##### atPath (obj, path)
+Simple way to lookup a value in elements returned from parse. 
+
+	var parsed = edn.parse("[[{:name :frank :kids [{:eye-color :red} {:eye-color :blue}]}]]");
+	edn.atPath(parsed, "0 0 kids 1 eye-color");
+	
+path is a space separated string which consists of index (remember Array/Set/Vector are all 0 indexed) and key locations. 
+
+##### encodeJson
+Provides a json encoding including type information e.g. Vector, List, Set etc. 
+
+	console.log(edn.encodeJson(edn.parse("[1 2 3 {:x 5 :y 6}]")));
+	#yields
+	{"Vector":[1,2,3,{"Map":["x",5,"y",6]}]}
+	
+##### toJS 
+Attempts to return a "plain" js object. Bare in mind this will yield poor results if you have any **Map** objects which utilize composite objects as keys. If an object has a **hashId** method it will use that when building the js dict. 
+
+	var jsobj = edn.toJS(edn.parse("[1 2 {:name {:first :ray :last :cappo}}]"));
+	#yields
+	[1, 2, {name: {first: "ray", last: "cappo"}}]
+
+
 ## Classes/Interfaces
 
 ####Pattern
@@ -92,7 +115,8 @@ All the above support methods ```exists``` and ```at```.
 
 	exists (key) -> boolean indicating existance of key
 	at (key) -> value at key in collection
-
+	set (key, val) -> sets key/index to given value
+	
 Also supports the following methods mixed in from [underscore.js](http://www.underscorejs.org):
  
 	forEach, each, map, reduce, reduceRight, find, detect, filter, select, reject, every
@@ -119,7 +143,7 @@ If you do not have tag handlers specified for a given tag you will end up with *
 
 **Tagged** pairs can also be used when you want to serialize a js obj into edn w/ said tagging e.g. 
 	
-	edn.encode(new edn.Tagged(new edn.Tag('myApp', 'Person'), {name: "walter", age: 300}));
+	edn.encode(new edn.Tagged(new edn.Tag("myApp", "Person"), {name: "walter", age: 300}));
 
 outputs: 
 	

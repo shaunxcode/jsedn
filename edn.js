@@ -139,6 +139,16 @@
       });
     };
 
+    Iterable.prototype.jsEncode = function() {
+      return this.map(function(i) {
+        if (i.jsEncode != null) {
+          return i.jsEncode();
+        } else {
+          return i;
+        }
+      });
+    };
+
     Iterable.prototype.exists = function(index) {
       return this.val[index] != null;
     };
@@ -147,6 +157,11 @@
       if (this.exists(index)) {
         return this.val[index];
       }
+    };
+
+    Iterable.prototype.set = function(index, val) {
+      this.val[index] = val;
+      return this;
     };
 
     return Iterable;
@@ -276,6 +291,18 @@
           return _results;
         }).call(this)
       };
+    };
+
+    Map.prototype.jsEncode = function() {
+      var hashId, i, k, result, _k, _len2, _ref1;
+      result = {};
+      _ref1 = this.keys;
+      for (i = _k = 0, _len2 = _ref1.length; _k < _len2; i = ++_k) {
+        k = _ref1[i];
+        hashId = k.hashId != null ? k.hashId() : k;
+        result[hashId] = this.vals[i].jsEncode != null ? this.vals[i].jsEncode() : this.vals[i];
+      }
+      return result;
     };
 
     function Map(val) {
@@ -660,5 +687,32 @@
   exports.encode = encode;
 
   exports.encodeJson = encodeJson;
+
+  exports.atPath = function(obj, path) {
+    var part, value, _k, _len2;
+    path = path.trim().replace(/[ ]{2,}/g, ' ').split(' ');
+    value = obj;
+    for (_k = 0, _len2 = path.length; _k < _len2; _k++) {
+      part = path[_k];
+      if (value.exists) {
+        if (value.exists(part) != null) {
+          value = value.at(part);
+        } else {
+          throw "Could not find " + part;
+        }
+      } else {
+        throw "Not a composite object";
+      }
+    }
+    return value;
+  };
+
+  exports.toJS = function(obj) {
+    if (obj.jsEncode != null) {
+      return obj.jsEncode();
+    } else {
+      return obj;
+    }
+  };
 
 }).call(this);
