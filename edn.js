@@ -618,8 +618,8 @@
     } else if (tokenHandlers.float.pattern.test("" + obj)) {
       return parseFloat(obj);
     } else if (us.isString(obj)) {
-      if (prim && isKeyword(":" + obj)) {
-        return ":" + obj;
+      if (prim && isKeyword("" + obj)) {
+        return "" + obj;
       } else {
         return "\"" + (obj.toString()) + "\"";
       }
@@ -635,7 +635,7 @@
       result = [];
       for (k in obj) {
         v = obj[k];
-        result.push(encode(k, true));
+        result.push(encode((tokenHandlers.integer.pattern.test(k) ? k : ":" + k), true));
         result.push(encode(v, true));
       }
       return "{" + (result.join(" ")) + "}";
