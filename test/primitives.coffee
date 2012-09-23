@@ -284,14 +284,18 @@ assertEncode "can encode a nested list",
 	
 assertEncode "can encode list of strings",
 	["a", "b", "c", "words that are strings"]
-	"(:a :b :c \"words that are strings\")"
+	"(\"a\" \"b\" \"c\" \"words that are strings\")"
 	
 assertEncode "can encode list of maps",
 	[{name: "walter", age: 30}, {name: "tony", age: 50, kids: ["a", "b", "c"]}]
-	"({:name :walter :age 30} {:name :tony :age 50 :kids (:a :b :c)})"
+	"({:name \"walter\" :age 30} {:name \"tony\" :age 50 :kids (\"a\" \"b\" \"c\")})"
 
 assertEncode "can encode tagged items",
 	new edn.Tagged(new edn.Tag('myApp', 'Person'), {name: "walter", age: 30})
-	"#myApp/Person {:name :walter :age 30}"
+	"#myApp/Person {:name \"walter\" :age 30}"
+
+assertEncode "can handle keys that start with colon",
+	new edn.Vector [':a', 'b']
+	"[:a \"b\"]"
 
 console.log "PASSED: #{passed}/#{passed + failed}"

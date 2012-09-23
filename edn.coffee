@@ -302,8 +302,8 @@ encode = (obj, prim = true) ->
 
 	else if us.isString obj
 	
-		if prim and isKeyword ":#{obj}"
-			":#{obj}"
+		if prim and isKeyword "#{obj}"
+			"#{obj}"
 		else
 			"\"#{obj.toString()}\""
 
@@ -319,7 +319,7 @@ encode = (obj, prim = true) ->
 	else if us.isObject
 		result = []
 		for k, v of obj
-			result.push encode k, true
+			result.push encode (if tokenHandlers.integer.pattern.test k then k else ":#{k}"), true
 			result.push encode v, true
 		"{#{result.join " "}}"
 
