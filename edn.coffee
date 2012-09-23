@@ -280,71 +280,53 @@ tagActions =
 		uuid: tag: (new Tag "uuid"), action: (obj) -> obj
 		inst: tag: (new Tag "inst"), action: (obj) -> obj
 
+encodeHandlers =
+	array:
+		test: (obj) -> us.isArray obj
+		action: (obj) -> "[#{(encode v for v in obj).join " "}]"
+	integer: 
+		test: (obj) -> tokenHandlers.integer.pattern.test "#{obj}"
+		action: (obj) -> parseInt obj
+	float:
+		test: (obj) -> tokenHandlers.float.pattern.test "#{obj}"
+		action: (obj) -> parseFloat obj
+	keyword: 
+		test: (obj) -> (us.isString obj) and (" " not in obj) and (tokenHandlers.keyword.pattern.test obj)
+		action: (obj) -> obj
+	string:  
+		test: (obj) -> us.isString obj
+		action: (obj) ->  "\"#{obj.toString()}\""
+	boolean: 
+		test: (obj) -> us.isBoolean obj
+		action: (obj) -> if obj "true" else "false"
+	null:    
+		test: (obj) -> us.isNull obj
+		action: (obj) -> "nil"
+	object:  
+		test: (obj) -> us.isObject obj
+		action: (obj) -> 
+			result = []
+			for k, v of obj
+				result.push encode (if tokenHandlers.integer.pattern.test k then k else ":#{k}")
+				result.push encode v
+			"{#{result.join " "}}"
+
 #ENCODING
-isKeyword = (str) ->
-	(" " not in str) and (tokenHandlers.keyword.pattern.test str)
-		
-encode = (obj, prim = true) ->
-	if obj.ednEncode?
-		obj.ednEncode()
+encode = (obj) ->
+	return obj.ednEncode() if obj.ednEncode?
 
-	else if us.isArray obj
-		result = []
-		for v in obj
-			result.push encode v, prim
-		"(#{result.join " "})"
-			
-	else if tokenHandlers.integer.pattern.test "#{obj}"
-		parseInt obj
-
-	else if tokenHandlers.float.pattern.test "#{obj}"
-		parseFloat obj
-
-	else if us.isString obj
+	for name, handler of encodeHandlers
+		if handler.test obj
+			return handler.action obj
 	
-		if prim and isKeyword "#{obj}"
-			"#{obj}"
-		else
-			"\"#{obj.toString()}\""
-
-	else if us.isBoolean obj
-		if obj 
-			"true"
-		else
-			"false"
-
-	else if us.isNull obj
-		"nil"
-
-	else if us.isObject
-		result = []
-		for k, v of obj
-			result.push encode (if tokenHandlers.integer.pattern.test k then k else ":#{k}"), true
-			result.push encode v, true
-		"{#{result.join " "}}"
+	throw "unhandled encoding for #{JSON.stringify obj}"
 
 encodeJson = (obj, prettyPrint) ->
-	if obj.jsonEncode?
-		return encodeJson obj.jsonEncode(), prettyPrint
+	return (encodeJson obj.jsonEncode(), prettyPrint) if obj.jsonEncode?
 
-	if prettyPrint
-		JSON.stringify obj, null, 4
-	else 
-		JSON.stringify obj
-		
-exports.List = List
-exports.Vector = Vector
-exports.Map = Map
-exports.Set = Set
-exports.Tag = Tag
-exports.Tagged = Tagged
-exports.setTagAction = (tag, action) -> tagActions[tag.dn()] = tag: tag, action: action
-exports.setTokenPattern = (handler, pattern) -> tokenHandlers[handler].pattern = pattern
-exports.setTokenAction = (handler, action) -> tokenHandlers[handler].action = action
-exports.parse = (string) -> read lex string 
-exports.encode = encode
-exports.encodeJson = encodeJson
-exports.atPath = (obj, path) -> 
+	return if prettyPrint then (JSON.stringify obj, null, 4) else JSON.stringify obj
+
+atPath = 	(obj, path) -> 
 	path = path.trim().replace(/[ ]{2,}/g, ' ').split(' ')
 	value = obj
 	for part in path
@@ -357,8 +339,21 @@ exports.atPath = (obj, path) ->
 			throw "Not a composite object"
 	value
 
-exports.toJS = (obj) ->
-	if obj.jsEncode?
-		obj.jsEncode()
-	else
-		obj
+exports.List = List
+exports.Vector = Vector
+exports.Map = Map
+exports.Set = Set
+exports.Tag = Tag
+exports.Tagged = Tagged
+exports.setTagAction = (tag, action) -> tagActions[tag.dn()] = tag: tag, action: action
+exports.setTokenHandler = (handler, pattern, action) -> tokenHandlers[handler] = {pattern, action}
+exports.setTokenPattern = (handler, pattern) -> tokenHandlers[handler].pattern = pattern
+exports.setTokenAction = (handler, action) -> tokenHandlers[handler].action = action
+exports.setEncodeHandler = (handler, test, action) -> encodeHandlers[handler] = {test, action}
+exports.setEncodeTest = (type, test) -> encodeHandlers[type].test = test
+exports.setEncodeAction = (type, action) -> encodeHandlers[type].action = action
+exports.parse = (string) -> read lex string 
+exports.encode = encode
+exports.encodeJson = encodeJson
+exports.atPath = atPath
+exports.toJS = (obj) -> if obj.jsEncode? then obj.jsEncode() else	obj

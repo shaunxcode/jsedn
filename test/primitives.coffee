@@ -272,23 +272,23 @@ assertEncode "can encode map with numeric keys",
 
 assertEncode "can encode a list",
 	[1, 2, 3]
-	"(1 2 3)"
+	"[1 2 3]"
 	
 assertEncode "can encode single element list",
 	[1]
-	"(1)"
+	"[1]"
 	
 assertEncode "can encode a nested list",
 	[1, 2, 3, [4, 5, 6, [7, 8, 9, [10]]]]
-	"(1 2 3 (4 5 6 (7 8 9 (10))))"
+	"[1 2 3 [4 5 6 [7 8 9 [10]]]]"
 	
 assertEncode "can encode list of strings",
 	["a", "b", "c", "words that are strings"]
-	"(\"a\" \"b\" \"c\" \"words that are strings\")"
+	"[\"a\" \"b\" \"c\" \"words that are strings\"]"
 	
 assertEncode "can encode list of maps",
 	[{name: "walter", age: 30}, {name: "tony", age: 50, kids: ["a", "b", "c"]}]
-	"({:name \"walter\" :age 30} {:name \"tony\" :age 50 :kids (\"a\" \"b\" \"c\")})"
+	"[{:name \"walter\" :age 30} {:name \"tony\" :age 50 :kids [\"a\" \"b\" \"c\"]}]"
 
 assertEncode "can encode tagged items",
 	new edn.Tagged(new edn.Tag('myApp', 'Person'), {name: "walter", age: 30})
@@ -298,4 +298,8 @@ assertEncode "can handle keys that start with colon",
 	new edn.Vector [':a', 'b']
 	"[:a \"b\"]"
 
+assertParse "can parse and look up nested item",
+	"{:cat [{:hair :orange}]}"
+	(r) -> edn.atPath(r, "cat 0 hair") is "orange"
+	
 console.log "PASSED: #{passed}/#{passed + failed}"
