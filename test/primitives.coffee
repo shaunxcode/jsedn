@@ -113,7 +113,6 @@ assertParse "keyword starts with colon :fred is fred",
 	':fred'
 	'fred'
 
-
 assertParse "keyword can have slash :community/name", 
 	':community/name'
 	'community/name'
@@ -302,4 +301,9 @@ assertParse "can parse and look up nested item",
 	"{:cat [{:hair :orange}]}"
 	(r) -> edn.atPath(r, "cat 0 hair") is "orange"
 	
+
+assertEncode "can handle question marks for keywords",
+	[":find", "?m", ":where", ["?m", ":movie/title"]]
+	"[:find ?m :where [?m :movie/title]]"
+
 console.log "PASSED: #{passed}/#{passed + failed}"

@@ -555,7 +555,7 @@
       }
     },
     keyword: {
-      pattern: /^\:.*$/,
+      pattern: /^[\:\?].*$/,
       action: function(token) {
         return token.slice(1);
       }
