@@ -650,8 +650,8 @@
         return us.isBoolean(obj);
       },
       action: function(obj) {
-        if (obj("true")) {
-
+        if (obj) {
+          return "true";
         } else {
           return "false";
         }

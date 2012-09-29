@@ -298,7 +298,7 @@ encodeHandlers =
 		action: (obj) ->  "\"#{obj.toString()}\""
 	boolean: 
 		test: (obj) -> us.isBoolean obj
-		action: (obj) -> if obj "true" else "false"
+		action: (obj) -> if obj then "true" else "false"
 	null:    
 		test: (obj) -> us.isNull obj
 		action: (obj) -> "nil"
