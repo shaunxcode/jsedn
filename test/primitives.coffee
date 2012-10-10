@@ -19,7 +19,7 @@ assert = (desc, result, pred) ->
 	else
 		failed++
 		console.log "[FAIL]", desc
-		console.log "we got:", JSON.stringify result
+		console.log "we got:", result
 
 assertParse = (desc, str, pred) ->
 	try	 
@@ -70,6 +70,16 @@ assertParse 'a string "nil" should not be null',
 	'"nil"'
 	isNotVal null
 
+
+assertParse 'a string should handle escaped quote chars',
+	'"this is a string \\"and this should be escaped\\" mid string"'
+	'this is a string \"and this should be escaped\" mid string'
+	
+
+assertParse 'a string can contain escaped backslash itself',
+	'"this is a string with \\\\ a backslash escaped"'
+	'this is a string with \\ a backslash escaped'
+	
 #characters
 # \a \b \c ... \z. 
 # \newline, \space and \tab yield the corresponding characters.
@@ -305,5 +315,10 @@ assertParse "can parse and look up nested item",
 assertEncode "can handle question marks for keywords",
 	[":find", "?m", ":where", ["?m", ":movie/title"]]
 	"[:find ?m :where [?m :movie/title]]"
+
+
+assertEncode "can handle bare _ as symbol",
+	[new edn.Symbol("_"), ":likes", "?x"] 
+	"[_ :likes ?x]"
 
 console.log "PASSED: #{passed}/#{passed + failed}"

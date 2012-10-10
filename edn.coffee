@@ -9,7 +9,10 @@ class Prim
 			
 	value: -> @val
 	toString: -> JSON.stringify @val
-	
+
+class Symbol extends Prim
+	ednEncode: -> @val
+
 class StringObj extends Prim 
 	toString: -> @val
 	is: (test) -> @val is test
@@ -162,7 +165,7 @@ class Map
 #based on the work of martin keefe: http://martinkeefe.com/dcpl/sexp_lib.html
 parens = '()[]{}'
 specialChars = parens + ' \t\n\r,'
-
+escapeChar = '\\'
 parenTypes = 
 	'(' : closing: ')', class: List
 	'[' : closing: ']', class: Vector
@@ -183,7 +186,7 @@ lex = (string) ->
 					token = ''
 			continue
 			
-		if c is '"'
+		if c is '"' and not escaping?
 			if in_string?
 				list.push (new StringObj in_string)
 				in_string = undefined
@@ -192,6 +195,13 @@ lex = (string) ->
 			continue
 
 		if in_string?
+			if c is escapeChar and not escaping?
+				escaping = true
+				continue
+
+			if escaping? 
+				escaping = undefined
+
 			in_string += c
 		else if c in specialChars
 			if token
@@ -202,7 +212,7 @@ lex = (string) ->
 		else
 			if token is "#_"
 				list.push token
-				token = ''			
+				token = ''
 			token += c
 
 				
@@ -271,7 +281,7 @@ tokenHandlers =
 	tab:       pattern: /^\\tab$/,             action: (token) -> "\t"
 	newLine:   pattern: /^\\newline$/,         action: (token) -> "\n"
 	space:     pattern: /^\\space$/,           action: (token) -> " "
-	keyword:   pattern: /^[\:\?].*$/,              action: (token) -> token[1..-1]
+	keyword:   pattern: /^[\:\?].*$/,          action: (token) -> token[1..-1]
 	integer:   pattern: /^\-?[0-9]*$/,         action: (token) -> parseInt token
 	float:     pattern: /^\-?[0-9]*\.[0-9]*$/, action: (token) -> parseFloat token
 	tagged:    pattern: /^#.*$/,               action: (token) -> new Tag token[1..-1]
@@ -339,6 +349,7 @@ atPath = 	(obj, path) ->
 			throw "Not a composite object"
 	value
 
+exports.Symbol = Symbol
 exports.List = List
 exports.Vector = Vector
 exports.Map = Map
