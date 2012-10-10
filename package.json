@@ -3,7 +3,7 @@
 
 	"description": "js implementation of edn",
 
-	"version": "0.1.5",
+	"version": "0.1.6",
 
 	"keywords": ["lisp", "clojure", "edn", "serialization", "datomic"],
 
