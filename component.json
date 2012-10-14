@@ -9,6 +9,6 @@
   },
   "development": {},
   "scripts": [
-    "edn.js"
+    "index.js"
   ]
 }
