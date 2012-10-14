@@ -1,5 +1,6 @@
-us = require "underscore"
+us = require if module? then "underscore" else "component-underscore"
 
+	
 class Prim
 	constructor: (val) ->
 		if us.isArray val
