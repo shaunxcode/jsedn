@@ -1,5 +1,4 @@
-us = require if module? then "underscore" else "component-underscore"
-
+us = require "underscore"
 	
 class Prim
 	constructor: (val) ->
