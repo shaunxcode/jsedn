@@ -2,7 +2,7 @@
   "name": "jsedn",
   "repo": "shaunxcode/jsedn",
   "description": "edn parser, encode/decode for js",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "keywords": ["edn", "clojure", "datomic", "lisp"], 
   "dependencies": {
     "component/underscore": "*"

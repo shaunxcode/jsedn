@@ -709,7 +709,7 @@
 
   encode = function(obj) {
     var handler, name;
-    if (obj.ednEncode != null) {
+    if ((obj != null ? obj.ednEncode : void 0) != null) {
       return obj.ednEncode();
     }
     for (name in encodeHandlers) {

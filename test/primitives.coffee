@@ -1,4 +1,4 @@
-edn = require "../edn.coffee"
+edn = require "../index.coffee"
 us = require "underscore"
 
 #simple unit testing
@@ -320,5 +320,9 @@ assertEncode "can handle question marks for keywords",
 assertEncode "can handle bare _ as symbol",
 	[new edn.Symbol("_"), ":likes", "?x"] 
 	"[_ :likes ?x]"
+
+assertEncode "can handle null",
+	null
+	"nil"
 
 console.log "PASSED: #{passed}/#{passed + failed}"

@@ -323,7 +323,7 @@ encodeHandlers =
 
 #ENCODING
 encode = (obj) ->
-	return obj.ednEncode() if obj.ednEncode?
+	return obj.ednEncode() if obj?.ednEncode?
 
 	for name, handler of encodeHandlers
 		if handler.test obj
