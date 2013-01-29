@@ -325,4 +325,8 @@ assertEncode "can handle null",
 	null
 	"nil"
 
+assertParse "reading files works as expected",
+	edn.encode edn.readFileSync "./test.edn" 
+	new edn.Map ["key", "val", "key2", new edn.Vector [1, 2, 3]]
+
 console.log "PASSED: #{passed}/#{passed + failed}"

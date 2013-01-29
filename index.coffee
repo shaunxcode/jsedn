@@ -1,4 +1,5 @@
 us = require "underscore"
+fs = require "fs"
 	
 class Prim
 	constructor: (val) ->
@@ -368,3 +369,10 @@ exports.encode = encode
 exports.encodeJson = encodeJson
 exports.atPath = atPath
 exports.toJS = (obj) -> if obj.jsEncode? then obj.jsEncode() else	obj
+exports.readFile = (file, cb) -> 
+	fs.readFile file, "utf-8", (err, data) -> 
+		if err then throw err
+		cb exports.parse data
+  
+exports.readFileSync = (file) -> 
+	exports.parse fs.readFileSync file, "utf-8"
