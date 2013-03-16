@@ -288,25 +288,25 @@ tokenHandlers =
 	tagged:    pattern: /^#.*$/,               action: (token) -> new Tag token[1..-1]
 
 tagActions = 
-		uuid: tag: (new Tag "uuid"), action: (obj) -> obj
-		inst: tag: (new Tag "inst"), action: (obj) -> obj
+	uuid: tag: (new Tag "uuid"), action: (obj) -> obj
+	inst: tag: (new Tag "inst"), action: (obj) -> obj
 
-encodeHandlers =
+encodeHandlers = 
 	array:
 		test: (obj) -> us.isArray obj
 		action: (obj) -> "[#{(encode v for v in obj).join " "}]"
 	integer: 
-		test: (obj) -> tokenHandlers.integer.pattern.test "#{obj}"
+		test: (obj) -> us.isNumber(obj) and tokenHandlers.integer.pattern.test obj
 		action: (obj) -> parseInt obj
 	float:
-		test: (obj) -> tokenHandlers.float.pattern.test "#{obj}"
+		test: (obj) -> us.isNumber(obj) and tokenHandlers.float.pattern.test obj
 		action: (obj) -> parseFloat obj
 	keyword: 
 		test: (obj) -> (us.isString obj) and (" " not in obj) and (tokenHandlers.keyword.pattern.test obj)
 		action: (obj) -> obj
 	string:  
 		test: (obj) -> us.isString obj
-		action: (obj) ->  "\"#{obj.toString()}\""
+		action: (obj) ->  "\"#{obj.toString().replace /"/g, '\\"'}\""
 	boolean: 
 		test: (obj) -> us.isBoolean obj
 		action: (obj) -> if obj then "true" else "false"
@@ -318,7 +318,7 @@ encodeHandlers =
 		action: (obj) -> 
 			result = []
 			for k, v of obj
-				result.push encode (if tokenHandlers.integer.pattern.test k then k else ":#{k}")
+				result.push encode ":#{k}"
 				result.push encode v
 			"{#{result.join " "}}"
 
@@ -337,7 +337,7 @@ encodeJson = (obj, prettyPrint) ->
 
 	return if prettyPrint then (JSON.stringify obj, null, 4) else JSON.stringify obj
 
-atPath = 	(obj, path) -> 
+atPath = (obj, path) -> 
 	path = path.trim().replace(/[ ]{2,}/g, ' ').split(' ')
 	value = obj
 	for part in path

@@ -642,7 +642,7 @@
     },
     integer: {
       test: function(obj) {
-        return tokenHandlers.integer.pattern.test("" + obj);
+        return us.isNumber(obj) && tokenHandlers.integer.pattern.test(obj);
       },
       action: function(obj) {
         return parseInt(obj);
@@ -650,7 +650,7 @@
     },
     float: {
       test: function(obj) {
-        return tokenHandlers.float.pattern.test("" + obj);
+        return us.isNumber(obj) && tokenHandlers.float.pattern.test(obj);
       },
       action: function(obj) {
         return parseFloat(obj);
@@ -669,7 +669,7 @@
         return us.isString(obj);
       },
       action: function(obj) {
-        return "\"" + (obj.toString()) + "\"";
+        return "\"" + (obj.toString().replace(/"/g, '\\"')) + "\"";
       }
     },
     boolean: {
@@ -701,7 +701,7 @@
         result = [];
         for (k in obj) {
           v = obj[k];
-          result.push(encode((tokenHandlers.integer.pattern.test(k) ? k : ":" + k)));
+          result.push(encode(":" + k));
           result.push(encode(v));
         }
         return "{" + (result.join(" ")) + "}";

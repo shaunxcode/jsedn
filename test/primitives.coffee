@@ -275,9 +275,13 @@ assertEncode "can encode basic map",
 	{a: 1, b: 2}
 	"{:a 1 :b 2}"
 
+###
+This can not work from a js obj a keys are coerced to strings regardless of your intention
+If a user wants numeric keys they need to use an edn.Map directly. 
 assertEncode "can encode map with numeric keys",
 	{1: 1, 200: 2}
 	"{1 1 200 2}"
+###
 
 assertEncode "can encode a list",
 	[1, 2, 3]
@@ -328,5 +332,17 @@ assertEncode "can handle null",
 assertParse "reading files works as expected",
 	edn.encode edn.readFileSync "./test.edn" 
 	new edn.Map ["key", "val", "key2", new edn.Vector [1, 2, 3]]
+
+assertEncode "do not coerce numeric strings into numbers",
+	{a: "1"}
+	"{:a \"1\"}"
+
+assertEncode "encoding stringified json string handles quoting correctly",
+	edn.encode JSON.stringify a: "1"
+	'"\\\"{\\\\"a\\\\":\\\\"1\\\\"}\\\""'
+
+assert "json decoding an encoded json stringifed object...",
+	(JSON.parse edn.parse edn.encode JSON.stringify a: "1")
+	a: "1"
 
 console.log "PASSED: #{passed}/#{passed + failed}"
