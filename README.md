@@ -162,10 +162,10 @@ Note that ```"walter"``` becomes ```:walter``` as any string which can be a symb
 | symbol          | ```:sym~b~o!ol```    | ```"sym~b~o!ol"``` | ```"sym~b~o!ol"``` | 
 | integer         | ```666```            | ```666```          | ```666``` | 
 | floating point  | ```-6.66```          | ```-6.66```        | ```-6.66``` | 
-| list            | ```(a b (c d))```    | ```new edn.List("a", "b", new edn.List("c", "d"))``` | ```["a", "b", ["c", "d"]]``` | 
-| vector          | ```[a b c]```        | ```new edn.Vector("a", "b", "c")``` | ```["a", "b", "c"]``` |
+| list            | ```(a b (c d))```    | ```new edn.List(["a", "b", new edn.List(["c", "d"])])``` | ```["a", "b", ["c", "d"]]``` | 
+| vector          | ```[a b c]```        | ```new edn.Vector(["a", "b", "c"])``` | ```["a", "b", "c"]``` |
 | map             | ```{:a 1 :b 2}```    | ```new edn.Map(["a", 1, "b", 2])``` | ```{a: 1, b: 2}``` |
-| set             | ```#{1 2 3}```       | ```new edn.Set([1 2 3])``` | ```[1 2 3]``` | 
+| set             | ```#{1 2 3}```       | ```new edn.Set([1, 2, 3])``` | ```[1 2 3]``` | 
 | tagged elements | ```#tagName [1 2]``` | ```new edn.Tagged(new edn.Tag("tagName"), new end.Vector([1, 2]))``` | n/a |
 
 
