@@ -375,6 +375,6 @@ exports.readFile = (file, cb) ->
 		cb exports.parse data
 
 exports.compile = (string) ->
-	"return require('edn').parse(\"#{string.replace(/"/g, '\\"').replace(/\n/g, " ").trim()}\")"
+	"return require('jsedn').parse(\"#{string.replace(/"/g, '\\"').replace(/\n/g, " ").trim()}\")"
 exports.readFileSync = (file) -> 
 	exports.parse fs.readFileSync file, "utf-8"
