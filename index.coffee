@@ -12,7 +12,42 @@ class Prim
 	toString: -> JSON.stringify @val
 
 class Symbol extends Prim
+	constructor: (args...) ->
+		switch args.length
+			when 1
+				if args[0] is "/"
+					@ns = null
+					@name = "/"
+				else
+					parts = args[0].split "/"
+					#e.g. new Symbol ?cat
+					if parts.length is 1 
+						@ns = null
+						@name = parts[0]
+					#e.g. new Symbol ":myPets.cats/cordelia"
+					else if parts.length is 2
+						@ns = parts[0]
+						@name = parts[1]
+					else
+						throw "Can not have more than 1 forward slash in a symbol"
+					
+			#e.g. new Symbol ":myPets.cats", "margaret"
+			when 2
+				@ns = args[0]
+				@name = args[1]
+				
+		if @name.length is 0 
+			throw "Length of Symbol name can not be empty"
+			
+		@val = "#{if @ns then "#{@ns}/" else ""}#{@name}"
+
 	ednEncode: -> @val
+
+class Keyword extends Symbol
+	constructor: ->
+		super
+		if @val[0] isnt ":" then throw "keyword must start with a :"
+
 
 class StringObj extends Prim 
 	toString: -> @val
@@ -351,6 +386,7 @@ atPath = (obj, path) ->
 	value
 
 exports.Symbol = Symbol
+exports.Keyword = Keyword
 exports.List = List
 exports.Vector = Vector
 exports.Map = Map
