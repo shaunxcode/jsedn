@@ -409,6 +409,8 @@ exports.readFile = (file, cb) ->
 	fs.readFile file, "utf-8", (err, data) -> 
 		if err then throw err
 		cb exports.parse data
-  
+
+exports.compile = (string) ->
+	"return require('jsedn').parse(\"#{string.replace(/"/g, '\\"').replace(/\n/g, " ").trim()}\")"
 exports.readFileSync = (file) -> 
 	exports.parse fs.readFileSync file, "utf-8"
