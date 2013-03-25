@@ -832,7 +832,7 @@
   };
 
   exports.compile = function(string) {
-    return "return require('jsedn').parse(\"" + (string.replace(/"/g, '\\"').replace(/\n/g, " ").trim()) + "\")";
+    return "require('jsedn').parse(\"" + (string.replace(/"/g, '\\"').replace(/\n/g, " ").trim()) + "\")";
   };
 
   exports.readFileSync = function(file) {
