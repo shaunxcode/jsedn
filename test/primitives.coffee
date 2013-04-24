@@ -107,25 +107,25 @@ assertParse '\\space is a space',
 # Additionally, : # are allowed as constituent characters in symbols but not as the first character.
 assertParse "basic symbol 'cat' should be 'cat'",
 	'cat'
-	'cat'
+	edn.sym 'cat'
 
 assertParse "symbol with special characters 'cat*rat-bat'",
 	'cat*rat-bat'
-	'cat*rat-bat'
+	edn.sym 'cat*rat-bat'
 
 assertParse "symbol with colon and hash in middle 'cat:rat#bat'",
 	'cat:rat#bat'
-	'cat:rat#bat'
+	edn.sym 'cat:rat#bat'
 
 #keywords
 # :fred or :my/fred
-assertParse "keyword starts with colon :fred is fred",
+assertParse "keyword starts with colon :fred is edn.Keyword :fred",
 	':fred'
-	'fred'
+	edn.kw ':fred'
 
 assertParse "keyword can have slash :community/name", 
 	':community/name'
-	'community/name'
+	edn.kw ':community/name'
 
 #integers
 # 0 - 9, optionally prefixed by - to indicate a negative number.
@@ -156,23 +156,23 @@ assertParse "-12.32 is -12.32",
 # (a b 42)
 assertParse "basic list (a b 42) works",
 	'(a b 42)'
-	new edn.List ['a', 'b', 42]
+	new edn.List [(edn.sym 'a'), (edn.sym 'b'), 42]
 
 assertParse "nested list (a (b 42 (c d)))",
 	'(a (b 42 (c d)))'
-	new edn.List ['a', new edn.List ['b', 42, new edn.List ['c', 'd']]]
+	new edn.List [(edn.sym 'a'), new edn.List [(edn.sym 'b'), 42, new edn.List [(edn.sym 'c'), (edn.sym 'd')]]]
 
 #vectors
 # [a b 42]
 assertParse "vector works [a b c]",
 	'[a b c]'
-	new edn.Vector ['a', 'b', 'c']
+	new edn.Vector [(edn.sym 'a'), (edn.sym 'b'), (edn.sym 'c')]
 
 #maps
 # {:a 1, "foo" :bar, [1 2 3] four}
 assertParse "kv pairs in map work {:a 1 :b 2}",
 	'{:a 1 :b 2}'
-	new edn.Map ["a", 1, "b", 2] 
+	new edn.Map [(edn.kw ":a"), 1, (edn.kw ":b"), 2] 
 
 assertParse "anything can be a key",
 	'{[1 2 3] "some numbers"}'
@@ -180,7 +180,7 @@ assertParse "anything can be a key",
 
 assertParse "even a map can be a key",
 	'{{:name "blue" :type "color"} [ocean sky moon]}'
-	new edn.Map [(new edn.Map ["name", "blue", "type", "color"]), new edn.Vector ["ocean", "sky", "moon"]]
+	new edn.Map [(new edn.Map [(edn.kw ":name"), "blue", (edn.kw ":type"), "color"]), new edn.Vector [(edn.sym "ocean"), (edn.sym "sky"), (edn.sym "moon")]]
 
 #sets
 # #{a b [1 2 3]}
@@ -198,7 +198,7 @@ assertParse "a set is distinct",
 # #uuid "f81d4fae-7dec-11d0-a765-00a0c91e6bf6"
 assertParse 'basic tags work #myapp/Person {:first "Fred" :last "Mertz"}',
 	'#myapp/Person {:first "Fred" :last "Mertz"}'
-	new edn.Tagged (new edn.Tag "myapp", "Person"), new edn.Map ["first", "Fred", "last", "Mertz"]
+	new edn.Tagged (new edn.Tag "myapp", "Person"), new edn.Map [(edn.kw ":first"), "Fred", (edn.kw ":last"), "Mertz"]
 
 assertParse "unhandled tagged pair works",
 	'#some/inst "1985-04-12T23:20:50.52Z"'
@@ -206,29 +206,29 @@ assertParse "unhandled tagged pair works",
 
 assertParse "tagged elements in a vector",
 	"[a b #animal/cat rodger c d]"
-	new edn.Vector ["a", "b", (new edn.Tagged (new edn.Tag "animal", "cat"), "rodger"), "c", "d"]
+	new edn.Vector [(edn.sym "a"), (edn.sym "b"), (new edn.Tagged (new edn.Tag "animal", "cat"), (edn.sym "rodger")), (edn.sym "c"), (edn.sym "d")]
 
 edn.setTagAction new edn.Tag("myApp", "Person"), (obj) -> 
-	obj.set "age", obj.at("age") + 100
+	obj.set (edn.kw ":age"), obj.at(edn.kw ":age") + 100
 
 assertParse "tag actions are recognized", 
 	"#myApp/Person {:name :walter :age 500}"
-	new edn.Map ["name", "walter", "age", 600]
+	new edn.Map [(edn.kw ":name"), (edn.kw ":walter"), (edn.kw ":age"), 600]
 
 #Comments
 #If a ; character is encountered outside of a string, that character 
 #and all subsequent characters to the next newline should be ignored.
 assertParse "there can be comments in a vector",
 	"[valid vector\n;;comment in vector\nmore vector items]"
-	new edn.Vector ["valid", "vector", "more", "vector", "items"]
+	new edn.Vector [(edn.sym "valid"), (edn.sym "vector"), (edn.sym "more"), (edn.sym "vector"), (edn.sym "items")]
 
 assertParse "there can be inline comments",
 	"[valid ;comment\n more items]"
-	new edn.Vector ["valid", "more", "items"]
+	new edn.Vector [(edn.sym "valid"), (edn.sym "more"), (edn.sym "items")]
 
 assertParse "whitespace does not affect comments",
 	"[valid;touching trailing comment\nmore items]"
-	new edn.Vector ["valid", "more", "items"]
+	new edn.Vector [(edn.sym "valid"), (edn.sym "more"), (edn.sym "items")]
 	
 #Discard
 #If the sequence #_ is encountered outside of a string, symbol or keyword, 
@@ -237,7 +237,7 @@ assertParse "whitespace does not affect comments",
 #tag handlers during the processing of the element to be discarded.
 assertParse "discarding item in vector",
 	"[a b #_ c d]"
-	new edn.Vector ["a", "b", "d"]
+	new edn.Vector [(edn.sym "a"), (edn.sym "b"), (edn.sym "d")]
 
 assertParse "discard an item outside of form",
 	"#_ a"
@@ -245,26 +245,26 @@ assertParse "discard an item outside of form",
 	
 assertParse "discard touches an item",
 	"[a b #_c d]"
-	new edn.Vector ["a", "b", "d"]
+	new edn.Vector [(edn.sym "a"), (edn.sym "b"), (edn.sym "d")]
 
 assertParse "discard an entire form",
 	"[a b #_ [a b] c d]"
-	new edn.Vector ["a", "b", "c", "d"]
+	new edn.Vector [(edn.sym "a"), (edn.sym "b"), (edn.sym "c"), (edn.sym "d")]
 
 assertParse "discard with a comment",
 	"[a #_ ;we are discarding what comes next\n c d]"
-	new edn.Vector ["a", "d"]
+	new edn.Vector [(edn.sym "a"), (edn.sym "d")]
 
 #Whitespace
 #commas are whitespace 
 assertParse "no one cares about commas",
 	"[a ,,,,,, b,,,,,c ,d]"
-	new edn.Vector ["a", "b", "c", "d"]
+	new edn.Vector [(edn.sym "a"), (edn.sym "b"), (edn.sym "c"), (edn.sym "d")]
 
 #Map Instances
 assertParse "can lookup key",
 	"{:a 1 :b 2}"
-	(m) -> m.at('a') is 1
+	(m) -> m.at(edn.kw ':a') is 1
 
 assertParse "can lookup by other object",
 	'{[1 2] "rabbit moon"}'
@@ -273,7 +273,7 @@ assertParse "can lookup by other object",
 #encoding
 assertEncode "can encode basic map",
 	{a: 1, b: 2}
-	"{:a 1 :b 2}"
+	"{\"a\" 1 \"b\" 2}"
 
 ###
 This can not work from a js obj a keys are coerced to strings regardless of your intention
@@ -301,28 +301,28 @@ assertEncode "can encode list of strings",
 	
 assertEncode "can encode list of maps",
 	[{name: "walter", age: 30}, {name: "tony", age: 50, kids: ["a", "b", "c"]}]
-	"[{:name \"walter\" :age 30} {:name \"tony\" :age 50 :kids [\"a\" \"b\" \"c\"]}]"
+	"[{\"name\" \"walter\" \"age\" 30} {\"name\" \"tony\" \"age\" 50 \"kids\" [\"a\" \"b\" \"c\"]}]"
 
 assertEncode "can encode tagged items",
 	new edn.Tagged(new edn.Tag('myApp', 'Person'), {name: "walter", age: 30})
-	"#myApp/Person {:name \"walter\" :age 30}"
+	"#myApp/Person {\"name\" \"walter\" \"age\" 30}"
 
-assertEncode "can handle keys that start with colon",
+assertEncode "can handle string that start with colon",
 	new edn.Vector [':a', 'b']
-	"[:a \"b\"]"
+	"[\":a\" \"b\"]"
 
 assertParse "can parse and look up nested item",
 	"{:cat [{:hair :orange}]}"
-	(r) -> edn.atPath(r, "cat 0 hair") is "orange"
+	(r) -> edn.atPath(r, ":cat 0 :hair") is (edn.kw ":orange")
 	
 
 assertEncode "can handle question marks for keywords",
-	[":find", "?m", ":where", ["?m", ":movie/title"]]
+	[(edn.kw ":find"), (edn.sym "?m"), (edn.kw ":where"), [(edn.sym "?m"), (edn.kw ":movie/title")]]
 	"[:find ?m :where [?m :movie/title]]"
 
 
 assertEncode "can handle bare _ as symbol",
-	[new edn.Symbol("_"), ":likes", "?x"] 
+	[(edn.sym "_"), (edn.kw ":likes"), (edn.sym "?x")]
 	"[_ :likes ?x]"
 
 assertEncode "can handle null",
@@ -331,11 +331,11 @@ assertEncode "can handle null",
 
 assertParse "reading files works as expected",
 	edn.encode edn.readFileSync "./test.edn" 
-	new edn.Map ["key", "val", "key2", new edn.Vector [1, 2, 3]]
+	new edn.Map [(edn.kw ":key"), "val", (edn.kw ":key2"), new edn.Vector [1, 2, 3]]
 
 assertEncode "do not coerce numeric strings into numbers",
 	{a: "1"}
-	"{:a \"1\"}"
+	"{\"a\" \"1\"}"
 
 assertEncode "encoding stringified json string handles quoting correctly",
 	edn.encode JSON.stringify a: "1"
@@ -345,4 +345,8 @@ assert "json decoding an encoded json stringifed object...",
 	(JSON.parse edn.parse edn.encode JSON.stringify a: "1")
 	a: "1"
 
+assert "two keywords are eqaul",
+	(edn.kw ":cat") is (edn.kw ":cat")
+	true
+	
 console.log "PASSED: #{passed}/#{passed + failed}"

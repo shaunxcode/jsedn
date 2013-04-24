@@ -11,7 +11,7 @@ class Prim
 	value: -> @val
 	toString: -> JSON.stringify @val
 
-class Symbol extends Prim
+class Symbol extends Prim	
 	constructor: (args...) ->
 		switch args.length
 			when 1
@@ -41,13 +41,24 @@ class Symbol extends Prim
 			
 		@val = "#{if @ns then "#{@ns}/" else ""}#{@name}"
 
+	toString: -> 
+		@val 
+		
 	ednEncode: -> @val
+
+	jsEncode: -> 
+		@val 
+
+	jsonEncode: -> 
+		Symbol: @val 
 
 class Keyword extends Symbol
 	constructor: ->
 		super
 		if @val[0] isnt ":" then throw "keyword must start with a :"
 
+	jsonEncode: ->
+		Keyword: @val
 
 class StringObj extends Prim 
 	toString: -> @val
@@ -88,6 +99,9 @@ class Iterable extends Prim
 	exists: (index) ->
 		@val[index]?
 
+	map: (iter) -> 
+		(iter i for i in @val)
+		
 	at: (index) ->
 		if @exists index then @val[index]
 
@@ -96,24 +110,6 @@ class Iterable extends Prim
 		
 		this
 		
-methods = [
-	'forEach', 'each', 'map', 'reduce', 'reduceRight', 'find'
-	'detect', 'filter', 'select', 'reject', 'every', 'all', 'some', 'any'
-	'include', 'contains', 'invoke', 'max', 'min', 'sortBy', 'sortedIndex'
-	'toArray', 'size', 'first', 'initial', 'rest', 'last', 'without', 'indexOf'
-	'shuffle', 'lastIndexOf', 'isEmpty', 'groupBy'
-]
-	
-for method in methods
-	do (method) ->
-		Iterable.prototype[method] = -> 
-			us[method].apply us, [@val].concat(us.toArray arguments)
-
-for method in ['concat', 'join', 'slice']
-	do (method) ->
-		Iterable.prototype[method] = ->
-			Array.prototype[method].apply @val, arguments
-
 class List extends Iterable
 	ednEncode: ->
 		"(#{super()})"
@@ -308,7 +304,8 @@ handle = (token) ->
 	for name, handler of tokenHandlers
 		if handler.pattern.test token
 			return handler.action token
-	token
+
+	sym token
 
 tokenHandlers =
 	nil:       pattern: /^nil$/,               action: (token) -> null
@@ -317,7 +314,7 @@ tokenHandlers =
 	tab:       pattern: /^\\tab$/,             action: (token) -> "\t"
 	newLine:   pattern: /^\\newline$/,         action: (token) -> "\n"
 	space:     pattern: /^\\space$/,           action: (token) -> " "
-	keyword:   pattern: /^[\:\?].*$/,          action: (token) -> token[1..-1]
+	keyword:   pattern: /^[\:\?].*$/,          action: (token) -> kw token
 	integer:   pattern: /^\-?[0-9]*$/,         action: (token) -> parseInt token
 	float:     pattern: /^\-?[0-9]*\.[0-9]*$/, action: (token) -> parseFloat token
 	tagged:    pattern: /^#.*$/,               action: (token) -> new Tag token[1..-1]
@@ -336,9 +333,6 @@ encodeHandlers =
 	float:
 		test: (obj) -> us.isNumber(obj) and tokenHandlers.float.pattern.test obj
 		action: (obj) -> parseFloat obj
-	keyword: 
-		test: (obj) -> (us.isString obj) and (" " not in obj) and (tokenHandlers.keyword.pattern.test obj)
-		action: (obj) -> obj
 	string:  
 		test: (obj) -> us.isString obj
 		action: (obj) ->  "\"#{obj.toString().replace /"/g, '\\"'}\""
@@ -353,7 +347,7 @@ encodeHandlers =
 		action: (obj) -> 
 			result = []
 			for k, v of obj
-				result.push encode ":#{k}"
+				result.push encode k
 				result.push encode v
 			"{#{result.join " "}}"
 
@@ -376,6 +370,9 @@ atPath = (obj, path) ->
 	path = path.trim().replace(/[ ]{2,}/g, ' ').split(' ')
 	value = obj
 	for part in path
+		if part[0] is ":" 
+			part = kw part 
+			
 		if value.exists
 			if value.exists(part)?
 				value = value.at part 
@@ -385,8 +382,20 @@ atPath = (obj, path) ->
 			throw "Not a composite object"
 	value
 
+symbols = {}
+sym = (val) -> 
+	if not symbols[val]? then symbols[val] = new Symbol val
+	symbols[val]
+	
+keywords = {}
+kw = (word) -> 
+	if not keywords[word]? then keywords[word] = new Keyword word
+	keywords[word]
+
 exports.Symbol = Symbol
+exports.sym = sym	
 exports.Keyword = Keyword
+exports.kw = kw 
 exports.List = List
 exports.Vector = Vector
 exports.Map = Map

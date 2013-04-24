@@ -11,15 +11,15 @@ A javascript implementation of [edn](https://github.com/edn-format/edn).
 ### Code
 	var edn = require("jsedn");
 	var map = edn.parse("{:a 5 [1 2] {:name :mike :age 40}}");
-	console.log(map.at(new edn.Vector([1, 2])).at("name"));
+	console.log(map.at(new edn.Vector([1, 2])).at(edn.kw ":name"));
 
 Will output ```"mike"```.
 
 Now the other way:
 
-	edn.encode({a: 1, "country/id": 333});
+	edn.encode({a: 1, "id": 333});
 
-Will output ```{:a 1 :country/id 333}```. Finally lets encode js into edn then back to js:
+Will output ```{"a" 1 "id" 333}```. Finally lets encode js into edn then back to js:
 
 	edn.parse(edn.encode({
 		a: 1, 
@@ -27,14 +27,14 @@ Will output ```{:a 1 :country/id 333}```. Finally lets encode js into edn then b
 			age: 30, 
 			feeling: ["electric", "pink"]
 		}
-	})).at("b").at("feeling")
-Will output ```["electric", "pink"]```. Definitely working in both directions. 
+	})).at("b").at("feeling").at(0)
+Will output ```"electric"```. Definitely working in both directions. 
 
 ###Command Line
 If you have installed via npm you will have a jsedn script that accepts input via pipe/stdin. Currently takes -s flag for "select" which you pass a path separated by space. -j encodes input as JSON. -p indicates pretty print for json output.
 
-	> echo "{:a first-item :b [{:name :walter :age 50 :kids [:A :B :C]}]}" | jsedn -s "b 0 kids 2"
-	outputs: b 0 kids 2 => :C
+	> echo "{:a first-item :b [{:name :walter :age 50 :kids [:A :B :C]}]}" | jsedn -s ":b 0 :kids 2"
+	outputs: :b 0 :kids 2 => :C
 	
 ### Testing
 I have developed this in a very test driven manner e.g. each test written  before the next feature is implemented. Baring that in mind it means any bugs you find it would be awesome if you could edit the tests adding one which clearly indicates the bug/feature request.
@@ -53,9 +53,6 @@ Will encode both native JS and any object providing a ednEncode method.
 
 	edn.encode({"a-keyword!": [1,2,-3.4]});
 
-Currently the choice has been made that any string it encounters will be marshalled into a keyword if it can e.g. it does not have spaces in it and does not start with any prohibited characters. Thus:
-
-	edn.encode({a: 1, b:2}) #outputs: "{:a 1 :b 2}"
 
 #####setTagAction (tag, action)
 Will add the tag action to be performed on any data prepended by said tag.
@@ -85,7 +82,7 @@ This is useful if you want to over-ride the naive implementations of Map etc.
 Simple way to lookup a value in elements returned from parse. 
 
 	var parsed = edn.parse("[[{:name :frank :kids [{:eye-color :red} {:eye-color :blue}]}]]");
-	edn.atPath(parsed, "0 0 kids 1 eye-color");
+	edn.atPath(parsed, "0 0 :kids 1 :eye-color");
 	
 path is a space separated string which consists of index (remember Array/Set/Vector are all 0 indexed) and key locations. 
 
@@ -94,17 +91,36 @@ Provides a json encoding including type information e.g. Vector, List, Set etc.
 
 	console.log(edn.encodeJson(edn.parse("[1 2 3 {:x 5 :y 6}]")));
 	#yields
-	{"Vector":[1,2,3,{"Map":["x",5,"y",6]}]}
+	{"Vector":[1,2,3,{"Map":[{"Keyword": ":x"},5,{"Keyword":":y"},6]}]}
 	
 ##### toJS 
 Attempts to return a "plain" js object. Bare in mind this will yield poor results if you have any **Map** objects which utilize composite objects as keys. If an object has a **hashId** method it will use that when building the js dict. 
 
 	var jsobj = edn.toJS(edn.parse("[1 2 {:name {:first :ray :last :cappo}}]"));
 	#yields
-	[1, 2, {name: {first: "ray", last: "cappo"}}]
+	[1, 2, {":name": {":first": ":ray", ":last": ":cappo"}}]
+
+Notice that you can not always go back the other direction. In the example above if you were to edn.encode it you would end up with:
+
+	[1 2 {":name" {":ray" ":last" ":cappo"}}]
+
+In which you have strings for keys instead of keywords. At one point I would "infer" that if a string started with a ":" it would be treated as a keyword. This caused more problems than it resolved which brings us to our next methods. 
+
+
+##### kw
+Interns a valid keyword into an edn.Keyword object e.g. ```edn.kw ":myns/kw"``` 
+
+##### sym
+Interns a valid symbol into an edn.Symbol object e.g. ```edn.sym "?name"```
 
 
 ## Classes/Interfaces
+
+#### Symbol
+Used to create symbols from with in js for encoding into edn. 
+
+### Keyword
+As above but for keywords. 
 
 ####Pattern
 	test (token)
@@ -159,12 +175,13 @@ Note that ```"walter"``` becomes ```:walter``` as any string which can be a symb
 | boolean         | ```true false```     | ```true false```   | ```true false``` | 
 | character       | ```\c```             | ```"c"```          | ```"c"``` | 
 | string          | ```"some string"```  | ```"some string"``` | ```"some string"``` |
-| symbol          | ```:sym~b~o!ol```    | ```"sym~b~o!ol"``` | ```"sym~b~o!ol"``` | 
+| symbol          | ```?sym~b~o!ol```    | ```edn.sym "?sym~b~o!ol"``` | ```"?sym~b~o!ol"``` | 
+| keywords        | ```:keyword```       | ```edn.kw ":keyword"```| ```":keyword"``` |  
 | integer         | ```666```            | ```666```          | ```666``` | 
 | floating point  | ```-6.66```          | ```-6.66```        | ```-6.66``` | 
-| list            | ```(a b (c d))```    | ```new edn.List(["a", "b", new edn.List(["c", "d"])])``` | ```["a", "b", ["c", "d"]]``` | 
-| vector          | ```[a b c]```        | ```new edn.Vector(["a", "b", "c"])``` | ```["a", "b", "c"]``` |
-| map             | ```{:a 1 :b 2}```    | ```new edn.Map(["a", 1, "b", 2])``` | ```{a: 1, b: 2}``` |
+| list            | ```(a b (c d))```    | ```new edn.List([(edn.sym "a"), (edn.sym "b"), new edn.List([(edn.sym "c"), (edn.sym "d")])])``` | ```["a", "b", ["c", "d"]]``` | 
+| vector          | ```[a b c]```        | ```new edn.Vector([(edn.sym "a"), (edn.sym "b"), (edn.sym "c")])``` | ```["a", "b", "c"]``` |
+| map             | ```{:a 1 :b 2}```    | ```new edn.Map([(edn.kw ":a"), 1, (edn.kw ":b"), 2])``` | ```{a: 1, b: 2}``` |
 | set             | ```#{1 2 3}```       | ```new edn.Set([1, 2, 3])``` | ```[1 2 3]``` | 
 | tagged elements | ```#tagName [1 2]``` | ```new edn.Tagged(new edn.Tag("tagName"), new end.Vector([1, 2]))``` | n/a |
 
