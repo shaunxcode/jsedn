@@ -1,5 +1,4 @@
 us = require "underscore"
-fs = require "fs"
 	
 class Prim
 	constructor: (val) ->
@@ -414,12 +413,18 @@ exports.encode = encode
 exports.encodeJson = encodeJson
 exports.atPath = atPath
 exports.toJS = (obj) -> if obj.jsEncode? then obj.jsEncode() else	obj
-exports.readFile = (file, cb) -> 
-	fs.readFile file, "utf-8", (err, data) -> 
-		if err then throw err
-		cb exports.parse data
+
+if typeof window is "undefined"
+	fs = require "fs"
+	exports.readFile = (file, cb) -> 
+		fs.readFile file, "utf-8", (err, data) -> 
+			if err then throw err
+			cb exports.parse data
+
+	exports.readFileSync = (file) -> 
+		exports.parse fs.readFileSync file, "utf-8"
 
 exports.compile = (string) ->
 	"return require('jsedn').parse(\"#{string.replace(/"/g, '\\"').replace(/\n/g, " ").trim()}\")"
-exports.readFileSync = (file) -> 
-	exports.parse fs.readFileSync file, "utf-8"
+
+
