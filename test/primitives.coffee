@@ -134,6 +134,10 @@ assertParse "0 is 0",
 	'0'
 	0
 
+assertParse "-0 is 0",
+	"-0"
+	0
+	
 assertParse "9923 is 9923",
 	'9923'
 	9923
@@ -141,6 +145,14 @@ assertParse "9923 is 9923",
 assertParse "-9923 is -9923",
 	'-9923'
 	-9923
+
+assertParse "+9923 is 9923", 
+	'+9923'
+	9923 
+
+assertParse "N for aritrary precision",
+	"432N"
+	432
 
 #floating point numbers
 # integers with frac e.g. 12.32
@@ -152,6 +164,26 @@ assertParse "-12.32 is -12.32",
 	'-12.32'
 	-12.32
 
+assertParse "+9923.23 is 9923.23",
+	"+9923.23"
+	9923.23
+	
+assertParse "M suffix on float",
+	"223.230M"
+	223.230
+
+assertParse "E+ supported for float",
+	"45.4E+43M"
+	4.54e+44
+	
+assertParse "e+ supported for float",
+	"45.4e+43M"
+	4.54e+44
+	
+assertParse "e+ supported for float no decimal",
+	"45e+43"
+	4.5e44
+	
 #lists
 # (a b 42)
 assertParse "basic list (a b 42) works",
@@ -330,7 +362,7 @@ assertEncode "can handle null",
 	"nil"
 
 assertParse "reading files works as expected",
-	edn.encode edn.readFileSync "./test.edn" 
+	edn.encode edn.readFileSync "#{__dirname}/test.edn" 
 	new edn.Map [(edn.kw ":key"), "val", (edn.kw ":key2"), new edn.Vector [1, 2, 3]]
 
 assertEncode "do not coerce numeric strings into numbers",
