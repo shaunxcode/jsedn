@@ -103,8 +103,11 @@ class Iterable extends Prim
 	exists: (index) ->
 		@val[index]?
 
-	map: (iter) -> 
+	each: (iter) ->
 		(iter i for i in @val)
+
+	map: (iter) ->
+		@each iter 
 		
 	at: (index) ->
 		if @exists index then @val[index]
@@ -159,7 +162,7 @@ class Map
 
 		result
 		
-	constructor: (@val) ->
+	constructor: (@val = []) ->
 		@keys = []
 		@vals = []
 		
@@ -199,6 +202,14 @@ class Map
 			@vals.push val
 
 		this
+
+	map: (iter) ->
+		result = new Map
+		@each (k, v) -> result.set k, iter k, v
+		result
+
+	each: (iter) -> 
+		((iter k, @at k) for k in @keys)
 
 #based on the work of martin keefe: http://martinkeefe.com/dcpl/sexp_lib.html
 parens = '()[]{}'

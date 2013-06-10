@@ -244,7 +244,7 @@
       return this.val[index] != null;
     };
 
-    Iterable.prototype.map = function(iter) {
+    Iterable.prototype.each = function(iter) {
       var i, _i, _len, _ref2, _results;
 
       _ref2 = this.val;
@@ -254,6 +254,10 @@
         _results.push(iter(i));
       }
       return _results;
+    };
+
+    Iterable.prototype.map = function(iter) {
+      return this.each(iter);
     };
 
     Iterable.prototype.at = function(index) {
@@ -398,7 +402,7 @@
     function Map(val) {
       var i, v, _i, _len, _ref4;
 
-      this.val = val;
+      this.val = val != null ? val : [];
       this.keys = [];
       this.vals = [];
       _ref4 = this.val;
@@ -461,6 +465,28 @@
         this.vals.push(val);
       }
       return this;
+    };
+
+    Map.prototype.map = function(iter) {
+      var result;
+
+      result = new Map;
+      this.each(function(k, v) {
+        return result.set(k, iter(k, v));
+      });
+      return result;
+    };
+
+    Map.prototype.each = function(iter) {
+      var k, _i, _len, _ref4, _results;
+
+      _ref4 = this.keys;
+      _results = [];
+      for (_i = 0, _len = _ref4.length; _i < _len; _i++) {
+        k = _ref4[_i];
+        _results.push(iter(k, this.at(k)));
+      }
+      return _results;
     };
 
     return Map;
