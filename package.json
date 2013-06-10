@@ -3,7 +3,7 @@
 
 	"description": "js implementation of edn",
 
-	"version": "0.2.2",
+	"version": "0.2.3",
 
 	"keywords": ["lisp", "clojure", "edn", "serialization", "datomic"],
 
@@ -37,8 +37,9 @@
 	},
 
 	"dependencies": {
-		"underscore": "latest",
-		"commander": "latest"
+		"commander": "latest",
+		"type-component": "latest",
+		"equals": "latest"
 	},
 	
 	"bin": {

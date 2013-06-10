@@ -1,9 +1,14 @@
-us = require "underscore"
+if typeof window is "undefined"
+	type = require "type-component"
+else
+	type = require "type"
+
+equals = require "equals"
 	
 class Prim
 	constructor: (val) ->
-		if us.isArray val
-			@val = us.filter val, (x) -> not (x instanceof Discard)
+		if type(val) is "array"
+			@val = (x for x in val when (not (x instanceof Discard)))
 		else
 			@val = val
 			
@@ -132,10 +137,12 @@ class Set extends Iterable
 
 	constructor: (val) ->
 		super()
-		@val = us.uniq val
-
-		if not us.isEqual val, @val
-			throw "set not distinct"
+		@val = []
+		for item in val
+			if item in @val 
+				throw "set not distinct"
+			else
+				@val.push item 
 
 class Map
 	ednEncode: ->
@@ -173,7 +180,7 @@ class Map
 		
 	exists: (key) ->
 		for k, i in @keys
-			if us.isEqual k, key
+			if equals k, key
 				return i
 				
 		return undefined
@@ -324,25 +331,25 @@ tagActions =
 
 encodeHandlers = 
 	array:
-		test: (obj) -> us.isArray obj
+		test: (obj) -> type(obj) is "array"
 		action: (obj) -> "[#{(encode v for v in obj).join " "}]"
 	integer: 
-		test: (obj) -> us.isNumber(obj) and tokenHandlers.integer.pattern.test obj
+		test: (obj) -> type(obj) is "number" and tokenHandlers.integer.pattern.test obj
 		action: (obj) -> parseInt obj
 	float:
-		test: (obj) -> us.isNumber(obj) and tokenHandlers.float.pattern.test obj
+		test: (obj) -> type(obj) is "number" and tokenHandlers.float.pattern.test obj
 		action: (obj) -> parseFloat obj
 	string:  
-		test: (obj) -> us.isString obj
+		test: (obj) -> type(obj) is "string"
 		action: (obj) ->  "\"#{obj.toString().replace /"/g, '\\"'}\""
 	boolean: 
-		test: (obj) -> us.isBoolean obj
+		test: (obj) -> type(obj) is "boolean"
 		action: (obj) -> if obj then "true" else "false"
 	null:    
-		test: (obj) -> us.isNull obj
+		test: (obj) -> type(obj) is "null"
 		action: (obj) -> "nil"
 	object:  
-		test: (obj) -> us.isObject obj
+		test: (obj) -> type(obj) is "object"
 		action: (obj) -> 
 			result = []
 			for k, v of obj

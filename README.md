@@ -8,6 +8,9 @@ A javascript implementation of [edn](https://github.com/edn-format/edn).
 ### Install
 	npm install jsedn
 
+### Use in a web page directly 
+	use jsedn.js which is a standalone version that will provide a global "jsedn".  
+
 ### Code
 	var edn = require("jsedn");
 	var map = edn.parse("{:a 5 [1 2] {:name :mike :age 40}}");
