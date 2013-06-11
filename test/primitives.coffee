@@ -57,6 +57,10 @@ assertParse "truefalse should not be true",
 	"truefalse"
 	isNotVal true
 
+assertParse "+ by itself is a valid symbol atom",
+	"+"
+	edn.sym "+"
+
 #strings
 # "double quotes". 
 # May span multiple lines. 

@@ -332,8 +332,8 @@ tokenHandlers =
 	newLine:   pattern: /^\\newline$/,         action: (token) -> "\n"
 	space:     pattern: /^\\space$/,           action: (token) -> " "
 	keyword:   pattern: /^[\:\?].*$/,          action: (token) -> kw token
-	integer:   pattern: /^[\-\+]?[0-9]*N?$/,         action: (token) -> parseInt if token is "-0" then "0" else token
-	float:     pattern: /^[\-\+]?[0-9]*(\.[0-9]*)?([eE][-+]?[0-9]+)?M?$/, action: (token) -> parseFloat token
+	integer:   pattern: /^[\-\+]?[0-9]+N?$/,   action: (token) -> parseInt if token is "-0" then "0" else token
+	float:     pattern: /^[\-\+]?[0-9]+(\.[0-9]*)?([eE][-+]?[0-9]+)?M?$/, action: (token) -> parseFloat token
 	tagged:    pattern: /^#.*$/,               action: (token) -> new Tag token[1..-1]
 
 tagActions = 
