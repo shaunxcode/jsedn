@@ -425,7 +425,7 @@
       for (i = _i = 0, _len = _ref4.length; _i < _len; i = ++_i) {
         v = _ref4[i];
         result.push(v);
-        if (this.vals[i] != null) {
+        if (this.vals[i] !== void 0) {
           result.push(this.vals[i]);
         }
       }

@@ -178,7 +178,7 @@ class Map
 		result = []
 		for v, i in @keys
 			result.push v
-			if @vals[i]? then result.push @vals[i]
+			if @vals[i] isnt undefined then result.push @vals[i]
 		result
 		
 	exists: (key) ->

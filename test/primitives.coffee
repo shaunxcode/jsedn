@@ -330,6 +330,10 @@ assertEncode "can encode a list",
 assertEncode "can encode single element list",
 	[1]
 	"[1]"
+
+assertEncode "Can encode nil in hash map", 
+	new edn.Map [edn.kw(":x"), 1, edn.kw(":y"), null]
+	"{:x 1 :y nil}"
 	
 assertEncode "can encode a nested list",
 	[1, 2, 3, [4, 5, 6, [7, 8, 9, [10]]]]
