@@ -1120,13 +1120,13 @@ require.register("jsedn/index.js", function(exports, require, module){
       }
     },
     integer: {
-      pattern: /^[\-\+]?[0-9]*N?$/,
+      pattern: /^[\-\+]?[0-9]+N?$/,
       action: function(token) {
         return parseInt(token === "-0" ? "0" : token);
       }
     },
     float: {
-      pattern: /^[\-\+]?[0-9]*(\.[0-9]*)?([eE][-+]?[0-9]+)?M?$/,
+      pattern: /^[\-\+]?[0-9]+(\.[0-9]*)?([eE][-+]?[0-9]+)?M?$/,
       action: function(token) {
         return parseFloat(token);
       }
@@ -1149,7 +1149,7 @@ require.register("jsedn/index.js", function(exports, require, module){
     inst: {
       tag: new Tag("inst"),
       action: function(obj) {
-        return obj;
+        return new Date(Date.parse(obj));
       }
     }
   };
@@ -1216,6 +1216,14 @@ require.register("jsedn/index.js", function(exports, require, module){
       },
       action: function(obj) {
         return "nil";
+      }
+    },
+    date: {
+      test: function(obj) {
+        return type(obj) === "date";
+      },
+      action: function(obj) {
+        return "#inst \"" + (obj.toISOString()) + "\"";
       }
     },
     object: {
