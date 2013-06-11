@@ -338,7 +338,7 @@ tokenHandlers =
 
 tagActions = 
 	uuid: tag: (new Tag "uuid"), action: (obj) -> obj
-	inst: tag: (new Tag "inst"), action: (obj) -> obj
+	inst: tag: (new Tag "inst"), action: (obj) -> new Date Date.parse obj
 
 encodeHandlers = 
 	array:
@@ -359,6 +359,9 @@ encodeHandlers =
 	null:    
 		test: (obj) -> type(obj) is "null"
 		action: (obj) -> "nil"
+	date:
+		test: (obj) -> type(obj) is "date" 
+		action: (obj) -> "#inst \"#{obj.toISOString()}\""
 	object:  
 		test: (obj) -> type(obj) is "object"
 		action: (obj) -> 

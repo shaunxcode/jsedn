@@ -227,6 +227,10 @@ assertParse "a set is distinct",
 #tagged elements
 # #myapp/Person {:first "Fred" :last "Mertz"}
 # #inst "1985-04-12T23:20:50.52Z"
+assertParse "inst is handled by default",
+	'#inst "1985-04-12T23:20:50.52Z"'
+	new Date Date.parse "1985-04-12T23:20:50.52Z"
+
 # #uuid "f81d4fae-7dec-11d0-a765-00a0c91e6bf6"
 assertParse 'basic tags work #myapp/Person {:first "Fred" :last "Mertz"}',
 	'#myapp/Person {:first "Fred" :last "Mertz"}'
