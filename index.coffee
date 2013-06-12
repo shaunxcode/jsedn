@@ -433,7 +433,7 @@ exports.parse = (string) -> read lex string
 exports.encode = encode
 exports.encodeJson = encodeJson
 exports.atPath = atPath
-exports.toJS = (obj) -> if obj.jsEncode? then obj.jsEncode() else	obj
+exports.toJS = (obj) -> if obj?.jsEncode? then obj.jsEncode() else obj
 
 if typeof window is "undefined"
 	fs = require "fs"

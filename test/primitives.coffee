@@ -392,5 +392,9 @@ assert "json decoding an encoded json stringifed object...",
 assert "two keywords are eqaul",
 	(edn.kw ":cat") is (edn.kw ":cat")
 	true
+
+assert "toJS works with nil as null",
+	edn.toJS edn.parse "nil"
+	null
 	
 console.log "PASSED: #{passed}/#{passed + failed}"
