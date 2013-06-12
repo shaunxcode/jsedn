@@ -644,7 +644,7 @@ require.register("jsedn/index.js", function(module, exports, require){
 
     Iterable.prototype.jsEncode = function() {
       return this.map(function(i) {
-        if (i.jsEncode != null) {
+        if ((i != null ? i.jsEncode : void 0) != null) {
           return i.jsEncode();
         } else {
           return i;
@@ -795,13 +795,13 @@ require.register("jsedn/index.js", function(module, exports, require){
     };
 
     Map.prototype.jsEncode = function() {
-      var hashId, i, k, result, _i, _len, _ref;
+      var hashId, i, k, result, _i, _len, _ref, _ref1;
       result = {};
       _ref = this.keys;
       for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
         k = _ref[i];
-        hashId = k.hashId != null ? k.hashId() : k;
-        result[hashId] = this.vals[i].jsEncode != null ? this.vals[i].jsEncode() : this.vals[i];
+        hashId = (k != null ? k.hashId : void 0) != null ? k.hashId() : k;
+        result[hashId] = ((_ref1 = this.vals[i]) != null ? _ref1.jsEncode : void 0) != null ? this.vals[i].jsEncode() : this.vals[i];
       }
       return result;
     };

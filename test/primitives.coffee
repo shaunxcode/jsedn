@@ -396,5 +396,13 @@ assert "two keywords are eqaul",
 assert "toJS works with nil as null",
 	edn.toJS edn.parse "nil"
 	null
+
+assert "vector should handle nil",
+	edn.toJS edn.parse "[nil nil nil]"
+	[null, null, null]
+
+assert "map should handle nil values",
+	edn.toJS edn.parse "{x nil nil nil}"
+	do -> x = x: null; x[null] = null; x
 	
 console.log "PASSED: #{passed}/#{passed + failed}"

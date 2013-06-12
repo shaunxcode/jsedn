@@ -98,7 +98,7 @@ class Iterable extends Prim
 		(@map (i) -> if i.jsonEncode? then i.jsonEncode() else i)
 	
 	jsEncode: ->
-		(@map (i) -> if i.jsEncode? then i.jsEncode() else i)
+		(@map (i) -> if i?.jsEncode? then i.jsEncode() else i)
 		
 	exists: (index) ->
 		@val[index]?
@@ -157,8 +157,8 @@ class Map
 	jsEncode: ->
 		result = {}
 		for k, i in @keys
-			hashId = if k.hashId? then k.hashId() else k 
-			result[hashId] = if @vals[i].jsEncode? then @vals[i].jsEncode() else @vals[i]
+			hashId = if k?.hashId? then k.hashId() else k 
+			result[hashId] = if @vals[i]?.jsEncode? then @vals[i].jsEncode() else @vals[i]
 
 		result
 		
