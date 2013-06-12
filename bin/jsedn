@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 var program = require('commander');
-var edn = require('../edn');
+var edn = require('../index.js');
 
 var stopWaiting = setTimeout(function(){
 	console.log("Did not receive input from pipe");
