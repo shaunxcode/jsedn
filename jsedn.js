@@ -489,6 +489,9 @@ require.register("jsedn/index.js", function(module, exports, require){
       if (this.name.length === 0) {
         throw "Length of Symbol name can not be empty";
       }
+      if (/^[0-9]/.test(this.name[0])) {
+        throw "Symbol cannot start with a number";
+      }
       this.val = "" + (this.ns ? "" + this.ns + "/" : "") + this.name;
     }
 
@@ -1085,7 +1088,7 @@ require.register("jsedn/index.js", function(module, exports, require){
       }
     },
     keyword: {
-      pattern: /^[\:\?].*$/,
+      pattern: /^[\:].*$/,
       action: function(token) {
         return kw(token);
       }

@@ -29,6 +29,15 @@ assertParse = (desc, str, pred) ->
 		
 	assert desc, result, pred
 
+assertNotParse = (desc, str) -> 
+	try 
+		edn.parse str
+		result = false
+	catch e
+		result = true
+
+	assert desc, str, -> result
+
 assertEncode = (desc, obj, pred) ->
 	assert desc, (edn.encode obj), pred
 #nil
@@ -109,6 +118,9 @@ assertParse '\\space is a space',
 # contain alphanumeric characters and . * + ! - _ ?. 
 # If - or . are the first character, the second character must be non-numeric. 
 # Additionally, : # are allowed as constituent characters in symbols but not as the first character.
+assertNotParse "do not allow non-numeric starting character",
+	"0xy" 
+
 assertParse "basic symbol 'cat' should be 'cat'",
 	'cat'
 	edn.sym 'cat'
@@ -120,6 +132,10 @@ assertParse "symbol with special characters 'cat*rat-bat'",
 assertParse "symbol with colon and hash in middle 'cat:rat#bat'",
 	'cat:rat#bat'
 	edn.sym 'cat:rat#bat'
+
+assertParse "symbol can start with ?",
+	"?x"
+	edn.sym "?x"
 
 #keywords
 # :fred or :my/fred
@@ -359,6 +375,10 @@ assertParse "can parse and look up nested item",
 	"{:cat [{:hair :orange}]}"
 	(r) -> edn.atPath(r, ":cat 0 :hair") is (edn.kw ":orange")
 	
+
+assertParse "can handle vector of symbols starting with ?",
+	"[?x ?y ?z]"
+	new edn.Vector [edn.sym("?x"), edn.sym("?y"), edn.sym("?z")]
 
 assertEncode "can handle question marks for keywords",
 	[(edn.kw ":find"), (edn.sym "?m"), (edn.kw ":where"), [(edn.sym "?m"), (edn.kw ":movie/title")]]
