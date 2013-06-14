@@ -1,0 +1,48 @@
+<!doctype HTML>
+<html>
+<head>
+<title>jsedn</title>
+<link rel="stylesheet" href="http://codemirror.net/lib/codemirror.css">
+<script src="http://codemirror.net/lib/codemirror.js"></script>
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://codemirror.net/mode/clojure/clojure.js"></script>
+<style>
+	body {margin: 0; padding: 0;}
+	.CodeMirror {
+		border-top: 1px solid #ddd;
+		border-bottom: 1px solid #ddd;
+	}
+	#parse {
+		margin: 1em;
+	}
+	#output {
+		border-top: 1px solid #ddd; 
+		padding: 1em;
+	}
+	h3 {
+		padding-left: 10px;
+		font-family: helvetica;
+	}
+	
+</style>
+</head>
+<body>
+	<h3>EDN</h3>
+	<textarea id="source">[:hello {:this :is :some #{valid edn}} as-of #inst 2013]</textarea>
+	<button id="parse">parse to JSON</button>
+	<h3>JSON</h3>
+	<pre id="output"></pre>
+	<script src="jsedn.js"></script>
+	<script>
+		var source = CodeMirror.fromTextArea(document.getElementById("source"), {lineNumbers: true});
+		var $output = $("#output");
+		$("#parse").click(function(){
+			try {
+				$("#output").text(JSON.stringify(jsedn.toJS(jsedn.parse(source.getValue())), null, 2));
+			} catch (e) {
+				alert(e);
+			}
+		})
+	</script>
+</body>
+</html>

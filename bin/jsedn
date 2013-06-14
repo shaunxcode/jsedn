@@ -2,6 +2,7 @@
 
 var program = require('commander');
 var edn = require('../index.js');
+var pkg = require('../package.json');
 
 var stopWaiting = setTimeout(function(){
 	console.log("Did not receive input from pipe");
@@ -9,7 +10,7 @@ var stopWaiting = setTimeout(function(){
 }, 500);
 
 program
-	.version('0.0.9')
+	.version(pkg.version)
 	.option('-s, --select [path]', 'select')
 	.option('-j, --json', 'json')
 	.option('-p, --pretty', 'pretty')

@@ -3,7 +3,7 @@
 
 	"description": "js implementation of edn",
 
-	"version": "0.2.91",
+	"version": "0.2.92",
 
 	"keywords": ["lisp", "clojure", "edn", "serialization", "datomic"],
 
@@ -46,5 +46,5 @@
 		"jsedn": "./bin/jsedn"
 	},
 	
-	"main": "edn.js"
+	"main": "index.js"
 }

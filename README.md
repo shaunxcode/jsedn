@@ -103,19 +103,33 @@ Attempts to return a "plain" js object. Bare in mind this will yield poor result
 	#yields
 	[1, 2, {":name": {":first": ":ray", ":last": ":cappo"}}]
 
-Notice that you can not always go back the other direction. In the example above if you were to edn.encode it you would end up with:
+Notice that you can not always go back the other direction. In the example above if you were to edn.parse it you would end up with:
 
-	[1 2 {":name" {":ray" ":last" ":cappo"}}]
+	[1 2 {":name" {":first" ":ray" ":last" ":cappo"}}]
 
 In which you have strings for keys instead of keywords. At one point I would "infer" that if a string started with a ":" it would be treated as a keyword. This caused more problems than it resolved which brings us to our next methods. 
 
 
-##### kw
-Interns a valid keyword into an edn.Keyword object e.g. ```edn.kw ":myns/kw"``` 
+##### kw (string)
+Interns a valid keyword into an edn.Keyword object e.g. ```edn.kw(":myns/kw")``` 
 
-##### sym
-Interns a valid symbol into an edn.Symbol object e.g. ```edn.sym "?name"```
+##### sym (string)
+Interns a valid symbol into an edn.Symbol object e.g. ```edn.sym("?name")```
 
+##### unify (data, values, [tokenStart])
+Unifies the first form with the second. Useful for populating a "data template". It accepts either edn objects or strings as arguments. 
+
+	edn.unify("{?key1 ?key1-val ?key2 ?key2-val :all [?key1-val ?key2-val]}", "{key1 :x key1-val 200 key2 :y key2-val 300}");
+	#yields
+	{:x 200 :y 300 :all [200 300]}
+	
+A third argument is expected which can be used to indicate the "tokenStart" first character for unify tokens. This defaults to "?". 
+
+An example with Map as data and js obj as values and changing the tokenStart to $
+
+	edn.unify(new edn.Map([edn.kw(":place"), edn.sym("$place")]), {place: "salt lake city"}, "$");
+	#yields 
+	{:place "salt lake city"}
 
 ## Classes/Interfaces
 
@@ -123,28 +137,30 @@ Interns a valid symbol into an edn.Symbol object e.g. ```edn.sym "?name"```
 Used to create symbols from with in js for encoding into edn. 
 
 ### Keyword
-As above but for keywords. 
-
-####Pattern
-	test (token)
-Usually this is just a regular expression (which thus has a test method)
+As above but for keywords. Note that the constructor enforced that keywords start with a ":" character. 
 
 ####Iterable [List Vector Set]
-All the above support methods ```exists``` and ```at```. 
+List, Vector and Set all implement the following methods:
 
 	exists (key) -> boolean indicating existance of key
 	at (key) -> value at key in collection
 	set (key, val) -> sets key/index to given value
+	each (iter) -> iterate overa all members calling iter on each, returns results
+	map (iter) -> iterate over all members calling iter on each and returning a new instace of self
+	walk (iter) -> recursively walk the data returning a new instance of self 
 	
-Also supports the following methods mixed in from [underscore.js](http://www.underscorejs.org):
- 
-	forEach, each, map, reduce, reduceRight, find, detect, filter, select, reject, every
-	all, some, any, include, contains, invoke, max, min, sortBy, sortedIndex, toArray, size
-	first, initial, rest, last, without, indexOf, shuffle, lastIndexOf, isEmpty, groupBy
-
 ####Map
-Supports any type of object as key. Like Iterable **Map** provides ```exists``` and ```at```. With the difference being that ```exists``` now returns the index of the item instead of boolean. 
+Supports any type of object as key. Supports all of the methods listed for Iterable plus ```indexOf``` which returns the index of the item, which can be 0 and thus non-truthy. 
 
+```each```, ```map``` and ```walk``` all accept a callback which takes the value as the first argument and the key as the second. In the case of map and walk if you want to modify the key you must return a ```Pair``` object e.g. 
+
+	edn.parse("{:x 300 y: 800}").map(function(val, key){
+		return new edn.Pair(edn.kw("#{key}-squared"), val * val);
+	});
+	
+	#yields
+	{:x-squared 90000 :y-squared 640000}
+	
 ####Tag
 Used for defining Tag Actions. Has a constructor which accepts 2..n args where the first arg is your a namespace and the rest are used to categorize the tag. **Tag** provides two methods ```ns``` and ````dn```:
 
@@ -166,9 +182,7 @@ If you do not have tag handlers specified for a given tag you will end up with *
 
 outputs: 
 	
-	#myApp/person {:name :walter :age 300}
-
-Note that ```"walter"``` becomes ```:walter``` as any string which can be a symbol is treated as such.
+	#myApp/person {"name" "walter" "age" 300}
 
 ##Conversion Table
 
