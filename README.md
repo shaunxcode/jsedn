@@ -1,7 +1,7 @@
 jsedn
 =====
 
-A javascript implementation of [edn](https://github.com/edn-format/edn). 
+A javascript implementation of [edn](https://github.com/edn-format/edn). To see it in action checkout the [edn playground](https://shaunxcode.github.com/jsedn). 
 
 ## Getting Started
 
