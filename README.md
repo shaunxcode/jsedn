@@ -1,7 +1,7 @@
 jsedn
 =====
 
-A javascript implementation of [edn](https://github.com/edn-format/edn). To see it in action checkout the [edn playground](https://shaunxcode.github.com/jsedn). 
+A javascript implementation of [edn](https://github.com/edn-format/edn). To see it in action checkout the [edn playground](https://shaunxcode.github.com/jsedn). If you open your browser console you will have access to a global jsedn object with which you can try things beside JSON encoding. I reccomend `jsedn.unify("[?x was always better than ?y]", {x: "sonic", y: "mario"}).jsEncode()`.  
 
 ## Getting Started
 
