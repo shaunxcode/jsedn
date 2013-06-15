@@ -62,20 +62,24 @@ assertParse 'a string can contain escaped backslash itself',
 
 assertParse 'basic \\c characters should be string',
 	'\\c'
-	"c"
+	edn.char("c", "second arg")
 
 assertParse '\\tab is a tab',
 	'\\tab'
-	"\t"
+	edn.char "tab"
 
 assertParse '\\newline is a newline',
 	'\\newline'
-	"\n"
+	edn.char "newline"
 
 assertParse '\\space is a space',
 	'\\space' 
-	" "
+	edn.char "space"
 
+assertParse "can read escaped paren",
+	"\\)"
+	edn.char ")"
+	
 #symbols
 # begin with a non-numeric character and can 
 # contain alphanumeric characters and . * + ! - _ ?. 

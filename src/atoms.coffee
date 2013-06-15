@@ -1,4 +1,5 @@
 type = require "./type"
+memo = require "./memo"
 
 class Prim
 	constructor: (val) ->
@@ -13,6 +14,21 @@ class Prim
 class StringObj extends Prim 
 	toString: -> @val
 	is: (test) -> @val is test
+
+charMap = newline: "\n", return: "\r", space: " ", tab: "\t", formfeed: "\f"
+	
+class Char extends StringObj
+	ednEncode: -> "\\#{@val}"
+	
+	jsEncode: -> charMap[@val] or @val
+	
+	jsonEncode: -> Char: @val 
+	
+	constructor: (val) ->
+		if charMap[val] or val.length is 1
+			@val = val
+		else
+			throw "Char may only be newline, return, space, tab, formfeed or a single character - you gave [#{val}]"
 
 class Discard
 	
@@ -67,15 +83,9 @@ class Keyword extends Symbol
 
 	jsonEncode: ->
 		Keyword: @val
-	
-keywords = {}
-kw = (word) -> 
-	if not keywords[word]? then keywords[word] = new Keyword word
-	keywords[word]
 
-symbols = {}
-sym = (val) -> 
-	if not symbols[val]? then symbols[val] = new Symbol val
-	symbols[val]
+char = memo Char
+kw = memo Keyword
+sym = memo Symbol
 	
-module.exports = {Prim, Symbol, Keyword, StringObj, Discard, kw, sym}
+module.exports = {Prim, Symbol, Keyword, StringObj, Char, Discard, char, kw, sym}

@@ -1,5 +1,5 @@
 type = require "./type"
-{Prim, Symbol, Keyword, StringObj, Discard, kw, sym} = require "./atoms"
+{Prim, Symbol, Keyword, StringObj, Char, Discard, char, kw, sym} = require "./atoms"
 {Iterable, List, Vector, Set, Pair, Map} = require "./collections"
 {Tag, Tagged, tagActions} = require "./tags"
 {encodeHandlers, encode, encodeJson} = require "./encode"
@@ -19,7 +19,7 @@ lex = (string) ->
 	list = []
 	token = ''
 	for c in string
-		if not in_string? and c is ";"
+		if not in_string? and c is ";" and not escaping?
 			in_comment = true
 			
 		if in_comment
@@ -47,13 +47,19 @@ lex = (string) ->
 				escaping = undefined
 
 			in_string += c
-		else if c in specialChars
+		
+		else if c in specialChars and not escaping?
 			if token
 				list.push token
 				token = ''
 			if c in parens
 				list.push c
 		else
+			if escaping
+				escaping = undefined
+			else if c is escapeChar
+				escaping = true
+			
 			if token is "#_"
 				list.push token
 				token = ''
@@ -111,6 +117,8 @@ read = (tokens) ->
 parse = (string) -> read lex string 
 
 module.exports = 
+	Char: Char
+	char: char
 	Iterable: Iterable
 	Symbol: Symbol
 	sym: sym	

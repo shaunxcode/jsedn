@@ -18,6 +18,7 @@
     "lib/collections.js",
     "lib/compile.js",
     "lib/encode.js",
+    "lib/memo.js",
     "lib/reader.js",
     "lib/tags.js",
     "lib/tokens.js",
