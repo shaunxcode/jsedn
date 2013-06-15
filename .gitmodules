@@ -1,0 +1,4 @@
+[submodule "test/edn-tests"]
+	path = test/edn-tests
+	url = https://github.com/shaunxcode/edn-tests.git
+
