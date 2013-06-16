@@ -1,0 +1,1 @@
+new edn.Vector ["c", "\n", "\r", " ", "\t"]

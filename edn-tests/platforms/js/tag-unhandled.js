@@ -1,0 +1,1 @@
+{"tag": "myapp/Person", "value": {":first": "Fred", ":last": "Mertz"}}

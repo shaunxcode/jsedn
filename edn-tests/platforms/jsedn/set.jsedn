@@ -1,0 +1,1 @@
+new edn.Set [edn.kw(":set"), edn.kw(":of"), edn.kw(":distinct"), edn.kw(":izem")]

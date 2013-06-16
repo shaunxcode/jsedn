@@ -76,7 +76,7 @@
 		});
 
 		$files.on("change", function(){
-			$.get("test/edn-tests/" + $(this).val(), function(data) {
+			$.get("edn-tests/" + $(this).val(), function(data) {
 				source.setValue(data);
 				$output.text("");
 			});

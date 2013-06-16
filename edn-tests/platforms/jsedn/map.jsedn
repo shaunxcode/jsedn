@@ -1,0 +1,1 @@
+new edn.Map [edn.kw(":this"), edn.sym("is"), edn.sym("a"), edn.sym("basic"), edn.syn("map"), edn.sym("tofu")]

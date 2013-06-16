@@ -1,0 +1,1 @@
+new edn.Map [null, new edn.Vector [edn.kw(":vector"), edn.kw(":of"), null, null]]
