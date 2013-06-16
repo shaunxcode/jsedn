@@ -51,6 +51,8 @@ lex = (string) ->
 
 			if escaping? 
 				escaping = undefined
+				if c in ["t", "n", "f", "r"] 
+					in_string += escapeChar
 
 			in_string += c
 		else if c in specialChars and not escaping?
