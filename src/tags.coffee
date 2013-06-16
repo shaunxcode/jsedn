@@ -11,6 +11,9 @@ class Tag
 class Tagged extends Prim
 	constructor: (@_tag, @_obj) ->
 
+	jsEncode: -> 
+		tag: @tag().dn(), value: @obj().jsEncode()
+
 	ednEncode: ->
 		"\##{@tag().dn()} #{require("./encode").encode @obj()}"
 

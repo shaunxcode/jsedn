@@ -1502,6 +1502,13 @@ require.register("jsedn/lib/tags.js", function(module, exports, require){
       this._obj = _obj;
     }
 
+    Tagged.prototype.jsEncode = function() {
+      return {
+        tag: this.tag().dn(),
+        value: this.obj().jsEncode()
+      };
+    };
+
     Tagged.prototype.ednEncode = function() {
       return "\#" + (this.tag().dn()) + " " + (require("./encode").encode(this.obj()));
     };
