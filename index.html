@@ -26,10 +26,14 @@
 	h3 {
 		padding-left: 10px;
 	}
-	a {
+	a, select {
 		display: inline-block;
 		padding: 10px;
 		float: right; 
+	}
+
+	select { 
+		margin-top: 10px;
 	}
 
 	
@@ -37,6 +41,11 @@
 </head>
 <body>
 	<a href="http://github.com/shaunxcode/jsedn">jsedn github</a>
+	<select id="files">
+		<option value="nil">--choose a file--</option>
+		<optgroup label="valid-edn"></optgroup>
+		<optgroup label="performance"></optgroup>
+	</select>
 	<h3>EDN</h3> 
 	<textarea id="source">[:hello {:this :is :some #{valid edn}} as-of #inst "2013"]</textarea>
 	<button id="parse">parse to JSON</button>
@@ -44,6 +53,18 @@
 	<pre id="output"></pre>
 	<script src="jsedn.js"></script>
 	<script>
+		$files = $("#files");
+		var loadFileListing = function(name) {
+			$.get(name + ".edn", function(tests){
+				$ctrl = $files.find("[label=" + name + "]");
+				jsedn.parse(tests).each(function(test){
+					$ctrl.append($("<option />").text(test).attr("value", name + "/" + test));
+				});
+			});
+		};
+		loadFileListing("valid-edn");
+		loadFileListing("performance"); 
+
 		var source = CodeMirror.fromTextArea(document.getElementById("source"), {lineNumbers: true});
 		var $output = $("#output");
 		$("#parse").click(function(){
@@ -52,7 +73,15 @@
 			} catch (e) {
 				alert(e);
 			}
-		})
+		});
+
+		$files.on("change", function(){
+			$.get("test/edn-tests/" + $(this).val(), function(data) {
+				source.setValue(data);
+				$output.text("");
+			});
+		});
+
 	</script>
 </body>
 </html>
