@@ -1228,11 +1228,16 @@ require.register("jsedn/lib/reader.js", function(module, exports, require){
   };
 
   lex = function(string) {
-    var c, escaping, in_comment, in_string, list, token, _i, _len;
+    var c, escaping, in_comment, in_string, line, lines, list, token, _i, _len;
     list = [];
+    lines = [];
+    line = 1;
     token = '';
     for (_i = 0, _len = string.length; _i < _len; _i++) {
       c = string[_i];
+      if (c === "\n" || c === "\r") {
+        line++;
+      }
       if ((typeof in_string === "undefined" || in_string === null) && c === ";" && (typeof escaping === "undefined" || escaping === null)) {
         in_comment = true;
       }
@@ -1241,6 +1246,7 @@ require.register("jsedn/lib/reader.js", function(module, exports, require){
           in_comment = void 0;
           if (token) {
             list.push(token);
+            lines.push(line);
             token = '';
           }
         }
@@ -1249,6 +1255,7 @@ require.register("jsedn/lib/reader.js", function(module, exports, require){
       if (c === '"' && (typeof escaping === "undefined" || escaping === null)) {
         if (typeof in_string !== "undefined" && in_string !== null) {
           list.push(new StringObj(in_string));
+          lines.push(line);
           in_string = void 0;
         } else {
           in_string = '';
@@ -1267,10 +1274,12 @@ require.register("jsedn/lib/reader.js", function(module, exports, require){
       } else if (__indexOf.call(specialChars, c) >= 0 && (escaping == null)) {
         if (token) {
           list.push(token);
+          lines.push(line);
           token = '';
         }
         if (__indexOf.call(parens, c) >= 0) {
           list.push(c);
+          lines.push(line);
         }
       } else {
         if (escaping) {
@@ -1280,6 +1289,7 @@ require.register("jsedn/lib/reader.js", function(module, exports, require){
         }
         if (token === "#_") {
           list.push(token);
+          lines.push(line);
           token = '';
         }
         token += c;
@@ -1287,41 +1297,51 @@ require.register("jsedn/lib/reader.js", function(module, exports, require){
     }
     if (token) {
       list.push(token);
+      lines.push(line);
     }
-    return list;
+    return {
+      tokens: list,
+      tokenLines: lines
+    };
   };
 
-  read = function(tokens) {
-    var read_ahead, result, token1;
-    read_ahead = function(token) {
+  read = function(ast) {
+    var read_ahead, result, token1, tokenLines, tokens;
+    tokens = ast.tokens, tokenLines = ast.tokenLines;
+    read_ahead = function(token, tokenIndex) {
       var L, closeParen, handledToken, paren, tagged;
+      if (tokenIndex == null) {
+        tokenIndex = 0;
+      }
       if (token === void 0) {
         return;
       }
-      if (paren = parenTypes[token]) {
+      if ((!(token instanceof StringObj)) && (paren = parenTypes[token])) {
         closeParen = paren.closing;
         L = [];
         while (true) {
           token = tokens.shift();
           if (token === void 0) {
-            throw 'unexpected end of list';
+            throw "unexpected end of list at line " + tokenLines[tokenIndex];
           }
+          tokenIndex++;
           if (token === paren.closing) {
             return new typeClasses[paren["class"]](L);
           } else {
-            L.push(read_ahead(token));
+            L.push(read_ahead(token, tokenIndex));
           }
         }
       } else if (__indexOf.call(")]}", token) >= 0) {
-        throw "unexpected " + token;
+        throw "unexpected " + token + " at line " + tokenLines[tokenIndex];
       } else {
         handledToken = handleToken(token);
         if (handledToken instanceof Tag) {
           token = tokens.shift();
+          tokenIndex++;
           if (token === void 0) {
-            throw 'was expecting something to follow a tag';
+            throw "was expecting something to follow a tag at line " + tokenLines[tokenIndex];
           }
-          tagged = new typeClasses.Tagged(handledToken, read_ahead(token));
+          tagged = new typeClasses.Tagged(handledToken, read_ahead(token, tokenIndex));
           if (tagged.tag().dn() === "") {
             if (tagged.obj() instanceof typeClasses.Map) {
               return new typeClasses.Set(tagged.obj().value());
