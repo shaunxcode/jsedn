@@ -17,8 +17,12 @@ parenTypes =
 #based on the work of martin keefe: http://martinkeefe.com/dcpl/sexp_lib.html
 lex = (string) ->
 	list = []
+	lines = []
+	line = 1
 	token = ''
 	for c in string
+		if c in ["\n", "\r"] then line++
+
 		if not in_string? and c is ";" and not escaping?
 			in_comment = true
 			
@@ -27,12 +31,14 @@ lex = (string) ->
 				in_comment = undefined
 				if token 
 					list.push token
+					lines.push line 
 					token = ''
 			continue
 			
 		if c is '"' and not escaping?
 			if in_string?
 				list.push (new StringObj in_string)
+				lines.push line 
 				in_string = undefined
 			else
 				in_string = ''
@@ -47,13 +53,14 @@ lex = (string) ->
 				escaping = undefined
 
 			in_string += c
-		
 		else if c in specialChars and not escaping?
 			if token
 				list.push token
+				lines.push line 
 				token = ''
 			if c in parens
 				list.push c
+				lines.push line 
 		else
 			if escaping
 				escaping = undefined
@@ -62,35 +69,42 @@ lex = (string) ->
 			
 			if token is "#_"
 				list.push token
+				lines.push line
 				token = ''
 			token += c
 
 	if token
 		list.push(token)
-	list
+		lines.push line 
+	{tokens: list, tokenLines: lines}
 
 #based roughly on the work of norvig from his lisp in python
-read = (tokens) ->
-	read_ahead = (token) ->
+read = (ast) ->
+	{tokens, tokenLines} = ast
+	
+	read_ahead = (token, tokenIndex = 0) ->
 		if token is undefined then return
 
-		if paren = parenTypes[token]
+		if (not (token instanceof StringObj)) and paren = parenTypes[token]
 			closeParen = paren.closing
 			L = []
 			while true
 				token = tokens.shift()
-				if token is undefined then throw 'unexpected end of list'
 
-				if token is paren.closing then return (new typeClasses[paren.class] L) else L.push read_ahead token
+				if token is undefined then throw "unexpected end of list at line #{tokenLines[tokenIndex]}"
 
-		else if token in ")]}" then throw "unexpected #{token}"
+				tokenIndex++
+				if token is paren.closing then return (new typeClasses[paren.class] L) else L.push read_ahead(token, tokenIndex)
+
+		else if token in ")]}" then throw "unexpected #{token} at line #{tokenLines[tokenIndex]}"
 
 		else
 			handledToken = handleToken token
 			if handledToken instanceof Tag
 				token = tokens.shift()
-				if token is undefined then throw 'was expecting something to follow a tag'
-				tagged = new typeClasses.Tagged handledToken, read_ahead token
+				tokenIndex++
+				if token is undefined then throw "was expecting something to follow a tag at line #{tokenLines[tokenIndex]}"
+				tagged = new typeClasses.Tagged handledToken, read_ahead(token, tokenIndex)
 				if tagged.tag().dn() is ""
 					if tagged.obj() instanceof typeClasses.Map
 						return new typeClasses.Set tagged.obj().value()
