@@ -33,7 +33,8 @@
 
 	"devDependencies": {
 		"coffee-script": "latest",
-		"underscore": "latest"
+		"underscore": "latest",
+		"microtime": "latest"
 	},
 
 	"dependencies": {

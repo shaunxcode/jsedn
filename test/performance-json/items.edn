@@ -1,0 +1,25 @@
+[vector-of-strings
+ vector-of-uuid
+ vector-of-instants
+ map-of-maps
+ vector-of-maps
+ vector-of-bigints
+ large-keyword-map
+ large-symbol-map
+ vector-of-longs
+ set-of-longs
+ vector-of-doubles
+ vector-of-bigdecs
+ map-tree
+ mixed-vector
+ set-of-keywords
+ vector-of-keywords
+ set-of-symbols
+ vector-of-symbols
+ vector-tree
+ vector-of-ints
+ vector-of-vectors
+ vector-of-booleans
+ list-of-nil
+ vector-of-nil
+ vector-of-chars]
