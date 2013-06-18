@@ -60,6 +60,9 @@ class Symbol extends Prim
 		if @name.length is 0 
 			throw "Length of Symbol name can not be empty"
 		
+		if @name[0] in ["@", "~"]
+			throw "Symbole can not start with #{@name[0]}"
+
 		if /^[0-9]/.test @name[0]
 			throw "Symbol cannot start with a number"
 

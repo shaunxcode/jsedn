@@ -85,6 +85,13 @@ assertParse "can read escaped paren",
 # contain alphanumeric characters and . * + ! - _ ?. 
 # If - or . are the first character, the second character must be non-numeric. 
 # Additionally, : # are allowed as constituent characters in symbols but not as the first character.
+
+assertNotParse "do not allow symbols to start with ~",
+	"~cat"
+
+assertNotParse "do not allow symbols to start with @",
+	"@cat"
+
 assertNotParse "do not allow non-numeric starting character",
 	"0xy" 
 
