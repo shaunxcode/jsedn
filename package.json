@@ -3,7 +3,7 @@
 
 	"description": "js implementation of edn",
 
-	"version": "0.3.3",
+	"version": "0.3.4",
 
 	"keywords": ["lisp", "clojure", "edn", "serialization", "datomic"],
 
@@ -26,10 +26,10 @@
 		"url": "http://www.opensource.org/licenses/mit-license.php"
 	}],
 
-	"repositories": [{
+	"repository": {
 		"type": "git",
 		"url": "http://www.github.com/shaunxcode/jsedn"
-	}],
+	},
 
 	"devDependencies": {
 		"coffee-script": "latest",

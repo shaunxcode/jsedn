@@ -1,4 +1,5 @@
 {Prim} = require "./atoms"
+type = require "./type"
 
 class Tag
 	constructor: (@namespace, @name...) ->
@@ -23,7 +24,10 @@ class Tagged extends Prim
 	tag: -> @_tag
 	obj: -> @_obj
 
-tagActions = 
+	walk: (iter) ->
+		new Tagged @_tag, if type(@_obj.walk) is "function" then @_obj.walk iter else iter @_obj
+		
+tagActions =
 	uuid: tag: (new Tag "uuid"), action: (obj) -> obj
 	inst: tag: (new Tag "inst"), action: (obj) -> new Date Date.parse obj
 	

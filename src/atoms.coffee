@@ -33,7 +33,29 @@ class Char extends StringObj
 class Discard
 	
 class Symbol extends Prim
-	constructor: (args...) ->
+
+	validRegex: /[0-9A-Za-z.*+!\-_?$%&=:#/]+/
+
+	invalidFirstChars: [":", "#", "/"] 
+
+	valid: (word) -> 
+
+		if word.match(@validRegex)?[0] isnt word
+			throw "provided an invalid symbol #{word}"
+
+		if word.length is 1 and word[0] isnt "/"
+			if word[0] in @invalidFirstChars 
+				throw "Invalid first character in symbol #{word[0]}"
+
+		if word[0] in ["-", "+", "."] and word[1]? and word[1].match /[0-9]/
+			throw "If first char is #{word[0]} the second char can not be numeric. You had #{word[1]}"
+
+		if word[0].match /[0-9]/
+			throw "first character may not be numeric. You provided #{word[0]}"
+
+		true 
+
+	constructor: (args...) ->		
 		switch args.length
 			when 1
 				if args[0] is "/"
@@ -45,10 +67,18 @@ class Symbol extends Prim
 					if parts.length is 1 
 						@ns = null
 						@name = parts[0]
+						if @name is ":"
+							throw "can not have a symbol of only :"
 					#e.g. new Symbol ":myPets.cats/cordelia"
 					else if parts.length is 2
 						@ns = parts[0]
+						if @ns is ""
+							throw "can not have a slash at start of symbol"
+						if @ns is ":"
+							throw "can not have a namespace of :"
 						@name = parts[1]
+						if @name.length is 0 
+							throw "symbol may not end with a slash."
 					else
 						throw "Can not have more than 1 forward slash in a symbol"
 					
@@ -58,31 +88,27 @@ class Symbol extends Prim
 				@name = args[1]
 				
 		if @name.length is 0 
-			throw "Length of Symbol name can not be empty"
+			throw "Symbol can not be empty"
 		
-		if @name[0] in ["@", "~"]
-			throw "Symbole can not start with #{@name[0]}"
-
-		if /^[0-9]/.test @name[0]
-			throw "Symbol cannot start with a number"
-
 		@val = "#{if @ns then "#{@ns}/" else ""}#{@name}"
+		@valid @val 
 
-	toString: -> 
-		@val 
+	toString: -> @val 
 		
 	ednEncode: -> @val
 
-	jsEncode: -> 
-		@val 
+	jsEncode: -> @val 
 
 	jsonEncode: -> 
 		Symbol: @val 
 
 class Keyword extends Symbol
+	invalidFirstChars: ["#", "/"]
+
 	constructor: ->
 		super
 		if @val[0] isnt ":" then throw "keyword must start with a :"
+		if @val[1]? is "/" then throw "keyword can not have a slash with out a namespace"
 
 	jsonEncode: ->
 		Keyword: @val

@@ -25,5 +25,9 @@ assert "unify accepts string for data which gets encoded",
 assert "unify will lookup symbol and keyword if using Map for data",
 	edn.unify "{?key [?val {?val ?key}]}", "{key :lunch-food :val [:carrot :tomato :lettuce]}"
 	edn.parse "{:lunch-food [[:carrot :tomato :lettuce] {[:carrot :tomato :lettuce] :lunch-food}]}"
-	
+
+assert "unify can handle updating a vector inside of a tagged value", 
+	edn.unify "{:db/id #db/id [:db.part/user ?id] :person/name ?name}", id: -1, name: "franklin"
+	edn.parse "{:db/id #db/id [:db.part/user -1] :person/name \"franklin\"}"
+ 
 console.log totalString()

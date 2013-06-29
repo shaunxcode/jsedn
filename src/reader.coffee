@@ -83,8 +83,8 @@ lex = (string) ->
 #based roughly on the work of norvig from his lisp in python
 read = (ast) ->
 	{tokens, tokenLines} = ast
-	
-	read_ahead = (token, tokenIndex = 0) ->
+
+	read_ahead = (token, tokenIndex = 0, expectSet = false) ->
 		if token is undefined then return
 
 		if (not (token instanceof StringObj)) and paren = parenTypes[token]
@@ -96,21 +96,29 @@ read = (ast) ->
 				if token is undefined then throw "unexpected end of list at line #{tokenLines[tokenIndex]}"
 
 				tokenIndex++
-				if token is paren.closing then return (new typeClasses[paren.class] L) else L.push read_ahead(token, tokenIndex)
+				if token is paren.closing
+					return new typeClasses[if expectSet then "Set" else paren.class] L
+				else 
+					L.push read_ahead token, tokenIndex
 
-		else if token in ")]}" then throw "unexpected #{token} at line #{tokenLines[tokenIndex]}"
-
+		else if token in ")]}"
+			throw "unexpected #{token} at line #{tokenLines[tokenIndex]}"
 		else
 			handledToken = handleToken token
 			if handledToken instanceof Tag
 				token = tokens.shift()
 				tokenIndex++
+
 				if token is undefined then throw "was expecting something to follow a tag at line #{tokenLines[tokenIndex]}"
-				tagged = new typeClasses.Tagged handledToken, read_ahead(token, tokenIndex)
-				if tagged.tag().dn() is ""
-					if tagged.obj() instanceof typeClasses.Map
-						return new typeClasses.Set tagged.obj().value()
-				
+
+				tagged = new typeClasses.Tagged handledToken, read_ahead token, tokenIndex, handledToken.dn() is ""
+
+				if handledToken.dn() is ""
+					if tagged.obj() instanceof typeClasses.Set
+						return tagged.obj()
+					else
+						throw "Exepected a set but did not get one at line #{tokenLines[tokenIndex]}"
+					
 				if tagged.tag().dn() is "_"
 					return new typeClasses.Discard
 				
