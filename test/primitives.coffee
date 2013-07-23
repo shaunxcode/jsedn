@@ -148,6 +148,10 @@ assertParse "N for aritrary precision",
 	"432N"
 	432
 
+assertParse "Very big ints remain as strings which user can deal with how they please",
+	"191561942608236107294793378084303638130997321548169216"
+	edn.bigInt "191561942608236107294793378084303638130997321548169216"
+
 #floating point numbers
 # integers with frac e.g. 12.32
 assertParse "12.32 is 12.32",

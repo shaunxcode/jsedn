@@ -11,6 +11,13 @@ class Prim
 	value: -> @val
 	toString: -> JSON.stringify @val
 
+class BigInt extends Prim 
+	ednEncode: -> @val
+	
+	jsEncode: -> @val
+	
+	jsonEncode: -> BigInt: @val 
+
 class StringObj extends Prim 
 	toString: -> @val
 	is: (test) -> @val is test
@@ -116,5 +123,6 @@ class Keyword extends Symbol
 char = memo Char
 kw = memo Keyword
 sym = memo Symbol
+bigInt = memo BigInt
 	
-module.exports = {Prim, Symbol, Keyword, StringObj, Char, Discard, char, kw, sym}
+module.exports = {Prim, Symbol, Keyword, StringObj, Char, Discard, BigInt, char, kw, sym, bigInt}

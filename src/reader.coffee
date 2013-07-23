@@ -1,5 +1,5 @@
 type = require "./type"
-{Prim, Symbol, Keyword, StringObj, Char, Discard, char, kw, sym} = require "./atoms"
+{Prim, Symbol, Keyword, StringObj, Char, Discard, BigInt, char, kw, sym ,bigInt} = require "./atoms"
 {Iterable, List, Vector, Set, Pair, Map} = require "./collections"
 {Tag, Tagged, tagActions} = require "./tags"
 {encodeHandlers, encode, encodeJson} = require "./encode"
@@ -147,7 +147,9 @@ module.exports =
 	Symbol: Symbol
 	sym: sym	
 	Keyword: Keyword
-	kw: kw 
+	kw: kw
+	BigInt: BigInt
+	bigInt: bigInt 
 	List: List
 	Vector: Vector
 	Pair: Pair
