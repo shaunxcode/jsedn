@@ -14,7 +14,7 @@ A javascript implementation of [edn](https://github.com/edn-format/edn). To see 
 ### Code
 	var edn = require("jsedn");
 	var map = edn.parse("{:a 5 [1 2] {:name :mike :age 40}}");
-	console.log(map.at(new edn.Vector([1, 2])).at(edn.kw ":name"));
+	console.log(map.at(new edn.Vector([1, 2])).at(edn.kw(":name")));
 
 Will output ```"mike"```.
 
