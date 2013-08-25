@@ -21,7 +21,7 @@ var map = edn.parse("{:a 5 [1 2] {:name :mike :age 40}}");
 console.log(map.at(new edn.Vector([1, 2])).at(edn.kw(":name")));
 ```
 
-Will output ```"mike"```.
+Will output `"mike"`.
 
 Now the other way:
 
@@ -46,7 +46,7 @@ edn.parse(edn.encode({
 	}
 })).at("b").at("feeling").at(0)
 ```
-Will output ```"electric"```. Definitely working in both directions. 
+Will output `"electric"`. Definitely working in both directions. 
 
 ###Command Line
 If you have installed via npm you will have a jsedn script that accepts input via pipe/stdin. Currently takes -s flag for "select" which you pass a path separated by space. -j encodes input as JSON. -p indicates pretty print for json output.
@@ -151,10 +151,18 @@ Notice that you can not always go back the other direction. In the example above
 In which you have strings for keys instead of keywords. At one point I would "infer" that if a string started with a ":" it would be treated as a keyword. This caused more problems than it resolved which brings us to our next methods. 
 
 ##### kw (string)
-Interns a valid keyword into an edn.Keyword object e.g. ```edn.kw(":myns/kw")``` 
+Interns a valid keyword into an `edn.Keyword` object e.g:
+
+```js
+edn.kw(":myns/kw")
+```
 
 ##### sym (string)
-Interns a valid symbol into an edn.Symbol object e.g. ```edn.sym("?name")```
+Interns a valid symbol into an `edn.Symbol` object e.g:
+
+```js
+edn.sym("?name")
+```
 
 ##### unify (data, values, [tokenStart])
 Unifies the first form with the second. Useful for populating a "data template". It accepts either edn objects or strings as arguments. 
@@ -198,9 +206,9 @@ List, Vector and Set all implement the following methods:
 	walk (iter) -> recursively walk the data returning a new instance of self 
 	
 ####Map
-Supports any type of object as key. Supports all of the methods listed for Iterable plus ```indexOf``` which returns the index of the item, which can be 0 and thus non-truthy. 
+Supports any type of object as key. Supports all of the methods listed for Iterable plus `indexOf` which returns the index of the item, which can be 0 and thus non-truthy. 
 
-```each```, ```map``` and ```walk``` all accept a callback which takes the value as the first argument and the key as the second. In the case of map and walk if you want to modify the key you must return a ```Pair``` object e.g. 
+`each`, `map` and `walk` all accept a callback which takes the value as the first argument and the key as the second. In the case of map and walk if you want to modify the key you must return a `Pair` object e.g. 
 
 ```js
 edn.parse("{:x 300 y: 800}").map(function(val, key){
@@ -213,7 +221,7 @@ yields:
 ```
 	
 ####Tag
-Used for defining Tag Actions. Has a constructor which accepts 2..n args where the first arg is your a namespace and the rest are used to categorize the tag. **Tag** provides two methods ```ns``` and ````dn```:
+Used for defining Tag Actions. Has a constructor which accepts 2..n args where the first arg is your a namespace and the rest are used to categorize the tag. **Tag** provides two methods `ns` and `dn`:
 
 ```js
 var tag = new edn.Tag('myApp', 'people', 'special', 'stuff');
@@ -221,7 +229,10 @@ console.log(tag.ns()); => myApp
 console.log(tag.dn()); => myApp/people/special/stuff
 ```
 
-Constructor also supports being passed single argument delimited by / e.g. ```new edn.Tag('myApp/people/special/stuff')```. 
+Constructor also supports being passed single argument delimited by / e.g:
+```js
+new edn.Tag('myApp/people/special/stuff')
+```
 
 ####Tagged
 If you do not have tag handlers specified for a given tag you will end up with **Tagged** items in your result which have two methods: 
