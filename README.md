@@ -162,7 +162,7 @@ Supports any type of object as key. Supports all of the methods listed for Itera
 	{:x-squared 90000 :y-squared 640000}
 	
 ####Tag
-Used for defining Tag Actions. Has a constructor which accepts 2..n args where the first arg is your a namespace and the rest are used to categorize the tag. **Tag** provides two methods ```ns``` and ````dn```:
+Used for defining Tag Actions. Has a constructor which accepts 2..n args where the first arg is your a namespace and the rest are used to categorize the tag. **Tag** provides two methods ```ns``` and ```dn```:
 
 	var tag = new edn.Tag('myApp', 'people', 'special', 'stuff');
 	console.log(tag.ns()); => myApp
