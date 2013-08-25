@@ -49,7 +49,11 @@ edn.parse(edn.encode({
 Will output ```"electric"```. Definitely working in both directions. 
 
 ###Command Line
-If you have installed via npm you will have a jsedn script that accepts input via pipe/stdin. Currently takes -s flag for "select" which you pass a path separated by space. -j encodes input as JSON. -p indicates pretty print for json output.
+If you have installed via `npm` you will have a jsedn script that accepts input via pipe/stdin. Currently takes:
+
+* `-s` flag for "select" which you pass a path separated by space
+* `-j` encodes input as JSON
+* `-p` indicates pretty print for json output
 
 ```bash
 > echo "{:a first-item :b [{:name :walter :age 50 :kids [:A :B :C]}]}" | jsedn -s ":b 0 :kids 2"
@@ -57,7 +61,7 @@ outputs: :b 0 :kids 2 => :C
 ```
 	
 ### Testing
-I have developed this in a very test driven manner e.g. each test written  before the next feature is implemented. Baring that in mind it means any bugs you find it would be awesome if you could edit the tests adding one which clearly indicates the bug/feature request.
+I have developed this in a very test driven manner e.g. each test written before the next feature is implemented. Baring that in mind it means any bugs you find it would be awesome if you could edit the tests adding one which clearly indicates the bug/feature request.
 
 ```bash
 coffee tests/primitives.coffee
@@ -190,12 +194,12 @@ As above but for keywords. Note that the constructor enforced that keywords star
 ####Iterable [List Vector Set]
 List, Vector and Set all implement the following methods:
 
-	exists (key) -> boolean indicating existance of key
-	at (key) -> value at key in collection
-	set (key, val) -> sets key/index to given value
-	each (iter) -> iterate overa all members calling iter on each, returns results
-	map (iter) -> iterate over all members calling iter on each and returning a new instace of self
-	walk (iter) -> recursively walk the data returning a new instance of self 
+* `exists (key)` -> boolean indicating existance of key
+* `at (key)` -> value at key in collection
+* `set (key, val)` -> sets key/index to given value
+* `each (iter)` -> iterate overa all members calling iter on each, returns results
+* `map (iter)` -> iterate over all members calling iter on each and returning a new instace of self
+* `walk (iter)` -> recursively walk the data returning a new instance of self 
 	
 ####Map
 Supports any type of object as key. Supports all of the methods listed for Iterable plus ```indexOf``` which returns the index of the item, which can be 0 and thus non-truthy. 
