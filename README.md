@@ -1,7 +1,10 @@
 jsedn
 =====
 
-A javascript implementation of [edn](https://github.com/edn-format/edn). To see it in action checkout the [edn playground](https://shaunxcode.github.com/jsedn). If you open your browser console you will have access to a global jsedn object with which you can try things beside JSON encoding. I recommend `jsedn.unify("[?x was always better than ?y]", {x: "sonic", y: "mario"}).jsEncode()`.  
+A javascript implementation of [edn](https://github.com/edn-format/edn). To see it in action checkout the [edn playground](https://shaunxcode.github.com/jsedn). If you open your browser console you will have access to a global jsedn object with which you can try things beside JSON encoding. I recommend:
+```js
+jsedn.unify("[?x was always better than ?y]", {x: "sonic", y: "mario"}).jsEncode();
+```
 
 ## Getting Started
 
@@ -186,21 +189,21 @@ outputs:
 
 ##Conversion Table
 
-| element         | edn                  | jsedn              | js |
-| --------------- | -------------------- | ------------------ | --- |
-| nil             | ```nil```            | ```null```         | ```null``` | 
-| boolean         | ```true false```     | ```true false```   | ```true false``` | 
-| character       | ```\c```             | ```"c"```          | ```"c"``` | 
-| string          | ```"some string"```  | ```"some string"``` | ```"some string"``` |
-| symbol          | ```?sym~b~o!ol```    | ```edn.sym "?sym~b~o!ol"``` | ```"?sym~b~o!ol"``` | 
-| keywords        | ```:keyword```       | ```edn.kw ":keyword"```| ```":keyword"``` |  
-| integer         | ```666```            | ```666```          | ```666``` | 
-| floating point  | ```-6.66```          | ```-6.66```        | ```-6.66``` | 
-| list            | ```(a b (c d))```    | ```new edn.List([edn.sym("a"), edn.sym("b"), new edn.List([edn.sym("c"), edn.sym("d")])])``` | ```["a", "b", ["c", "d"]]``` | 
-| vector          | ```[a b c]```        | ```new edn.Vector([edn.sym("a"), edn.sym("b"), edn.sym("c")])``` | ```["a", "b", "c"]``` |
-| map             | ```{:a 1 :b 2}```    | ```new edn.Map([edn.kw(":a"), 1, edn.kw(":b"), 2])``` | ```{a: 1, b: 2}``` |
-| set             | ```#{1 2 3}```       | ```new edn.Set([1, 2, 3])``` | ```[1 2 3]``` | 
-| tagged elements | ```#tagName [1 2]``` | ```new edn.Tagged(new edn.Tag("tagName"), new edn.Vector([1, 2]))``` | n/a |
+| element         | edn                | jsedn              | js |
+| --------------- | ------------------ | ------------------ | --- |
+| nil             | `nil`              | `null`         | `null` | 
+| boolean         | `true false`       | `true false`   | `true false` | 
+| character       | `\c`               | `"c"`          | `"c"` | 
+| string          | `"some string"`    | `"some string"` | `"some string"` |
+| symbol          | `?sym~b~o!ol`      | `edn.sym("?sym~b~o!ol")` | `"?sym~b~o!ol"` | 
+| keywords        | `:keyword`         | `edn.kw(":keyword")`| `":keyword"` |  
+| integer         | `666`              | `666`          | `666` | 
+| floating point  | `-6.66`            | `-6.66`        | `-6.66` | 
+| list            | `(a b (c d))`      | `new edn.List([edn.sym("a"), edn.sym("b"), new edn.List([edn.sym("c"), edn.sym("d")])])` | `["a", "b", ["c", "d"]]` | 
+| vector          | `[a b c]`          | `new edn.Vector([edn.sym("a"), edn.sym("b"), edn.sym("c")])` | `["a", "b", "c"]` |
+| map             | `{:a 1 :b 2}`      | `new edn.Map([edn.kw(":a"), 1, edn.kw(":b"), 2])` | `{a: 1, b: 2}` |
+| set             | `#{1 2 3}`         | `new edn.Set([1, 2, 3])` | `[1 2 3]` | 
+| tagged elements | `#tagName [1 2]`   | `new edn.Tagged(new edn.Tag("tagName"), new edn.Vector([1, 2]))` | n/a |
 
 
 
