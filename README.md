@@ -200,7 +200,7 @@ outputs:
 | vector          | ```[a b c]```        | ```new edn.Vector([(edn.sym "a"), (edn.sym "b"), (edn.sym "c")])``` | ```["a", "b", "c"]``` |
 | map             | ```{:a 1 :b 2}```    | ```new edn.Map([(edn.kw ":a"), 1, (edn.kw ":b"), 2])``` | ```{a: 1, b: 2}``` |
 | set             | ```#{1 2 3}```       | ```new edn.Set([1, 2, 3])``` | ```[1 2 3]``` | 
-| tagged elements | ```#tagName [1 2]``` | ```new edn.Tagged(new edn.Tag("tagName"), new end.Vector([1, 2]))``` | n/a |
+| tagged elements | ```#tagName [1 2]``` | ```new edn.Tagged(new edn.Tag("tagName"), new edn.Vector([1, 2]))``` | n/a |
 
 
 
