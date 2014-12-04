@@ -158,7 +158,7 @@ class Map
 
 	walk: (iter) -> 
 		@map (v, k) ->  	
-			if type(v.walk) is "function"
+			if type(v?.walk) is "function"
 				iter (v.walk iter), k
 			else
 				iter v, k
