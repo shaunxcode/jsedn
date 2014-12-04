@@ -27,7 +27,7 @@ class Iterable extends Prim
 
 	walk: (iter) -> 
 		@map (i) -> 
-			if i.walk? and type(i.walk) is "function" 
+			if type(i?.walk) is "function"
 				i.walk iter
 			else
 				iter i
