@@ -136,7 +136,7 @@ yields:
 ```
 	
 ##### toJS 
-Attempts to return a "plain" js object. Bare in mind this will yield poor results if you have any **Map** objects which utilize composite objects as keys. If an object has a **hashId** method it will use that when building the js dict. 
+Attempts to return a "plain" js object. Bear in mind this will yield poor results if you have any **Map** objects which utilize composite objects as keys. If an object has a **hashId** method it will use that when building the js dict. 
 
 ```js
 var jsobj = edn.toJS(edn.parse("[1 2 {:name {:first :ray :last :cappo}}]"));
