@@ -4,11 +4,6 @@ var program = require('commander');
 var edn = require('../index.js');
 var pkg = require('../package.json');
 
-var stopWaiting = setTimeout(function(){
-	console.log("Did not receive input from pipe");
-	process.stdin.destroy();
-}, 500);
-
 program
 	.version(pkg.version)
 	.option('-s, --select [path]', 'select')
@@ -22,8 +17,6 @@ process.stdin.setEncoding('utf8');
 var input = ''
 
 process.stdin.on('data', function(data) {
-	clearTimeout(stopWaiting);
-	
 	input += data;
 });
 
