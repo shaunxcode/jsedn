@@ -8,6 +8,7 @@
     "component/underscore": "*"
   },
   "scripts": [
+    "jsedn.js",
     "index.js", 
     "lib/atoms.js",
     "lib/atPath.js",
