@@ -4,10 +4,6 @@
   "description": "edn parser, encode/decode for js",
   "version": "1.0.0",
   "keywords": ["edn", "clojure", "datomic", "lisp"], 
-  "dependencies": {
-    "jkroso/equals": "*",
-    "component/type": "*"
-  },
   "development": {
     "component/underscore": "*"
   },
