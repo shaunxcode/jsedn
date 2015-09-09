@@ -5,7 +5,8 @@
   "version": "1.0.0",
   "keywords": ["edn", "clojure", "datomic", "lisp"], 
   "dependencies": {
-    "component/type": "*"
+    "jkroso/equals": "git@github.com/jkroso/equals",
+    "component/type": "git@github.com/component/type"
   },
   "development": {
     "component/underscore": "*"
