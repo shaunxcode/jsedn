@@ -7,9 +7,9 @@
   "development": {
     "component/underscore": "*"
   },
-  "main": ["index.js"],
+  "main": ["jsedn.js"],
   "scripts": [
-    "jsedn.js", 
+    "index.js", 
     "lib/atoms.js",
     "lib/atPath.js",
     "lib/collections.js",
