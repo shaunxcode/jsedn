@@ -1,6 +1,28 @@
 {
-  "name": "JSedn",
-  "main": ["jsedn.js", "index.js", "lib/atPath.js", "lib/atoms.js", "lib/collections.js", "lib/compile.js", "lib/encode.js", "lib/memo.js", "lib/reader.js", "lib/tags.js", "lib/tokens.js", "lib/type.js", "lib/unify.js"],
+  "name": "jsedn",
+  "repo": "groy/jsedn",
+  "description": "edn parser, encode/decode for js",
   "version": "1.0.0",
-  "homepage": "https://github.com/groy/jsedn"
+  "keywords": ["edn", "clojure", "datomic", "lisp"], 
+  "dependencies": {
+    "jkroso/equals": "*",
+    "component/type": "*"
+  },
+  "development": {
+    "component/underscore": "*"
+  },
+  "scripts": [
+    "index.js", 
+    "lib/atoms.js",
+    "lib/atPath.js",
+    "lib/collections.js",
+    "lib/compile.js",
+    "lib/encode.js",
+    "lib/memo.js",
+    "lib/reader.js",
+    "lib/tags.js",
+    "lib/tokens.js",
+    "lib/type.js",
+    "lib/unify.js"
+  ]
 }
