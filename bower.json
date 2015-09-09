@@ -9,5 +9,7 @@
   },
   "main": ["jsedn.js",
     "index.js", 
-    "lib/*"]
+    "lib/*",
+    "components/component/*",
+    "components/jkroso/*"]
 }
