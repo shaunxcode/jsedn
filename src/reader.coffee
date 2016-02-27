@@ -83,15 +83,16 @@ lex = (string) ->
 #based roughly on the work of norvig from his lisp in python
 read = (ast) ->
 	{tokens, tokenLines} = ast
+	tokenIndex = 0;
 
-	read_ahead = (token, tokenIndex = 0, expectSet = false) ->
+	read_ahead = (token, expectSet = false) ->
 		if token is undefined then return
 
 		if (not (token instanceof StringObj)) and paren = parenTypes[token]
 			closeParen = paren.closing
 			L = []
 			while true
-				token = tokens.shift()
+				token = tokens[tokenIndex]
 
 				if token is undefined then throw "unexpected end of list at line #{tokenLines[tokenIndex]}"
 
@@ -99,19 +100,19 @@ read = (ast) ->
 				if token is paren.closing
 					return new typeClasses[if expectSet then "Set" else paren.class] L
 				else 
-					L.push read_ahead token, tokenIndex
+					L.push read_ahead token
 
 		else if token in ")]}"
 			throw "unexpected #{token} at line #{tokenLines[tokenIndex]}"
 		else
 			handledToken = handleToken token
 			if handledToken instanceof Tag
-				token = tokens.shift()
+				token = tokens[tokenIndex]
 				tokenIndex++
 
 				if token is undefined then throw "was expecting something to follow a tag at line #{tokenLines[tokenIndex]}"
 
-				tagged = new typeClasses.Tagged handledToken, read_ahead token, tokenIndex, handledToken.dn() is ""
+				tagged = new typeClasses.Tagged handledToken, read_ahead token, handledToken.dn() is ""
 
 				if handledToken.dn() is ""
 					if tagged.obj() instanceof typeClasses.Set
@@ -129,10 +130,11 @@ read = (ast) ->
 			else
 				return handledToken
 
-	token1 = tokens.shift()
+	token1 = tokens[tokenIndex]
 	if token1 is undefined
 		return undefined 
 	else
+		tokenIndex++
 		result = read_ahead token1
 		if result instanceof typeClasses.Discard 
 			return ""
