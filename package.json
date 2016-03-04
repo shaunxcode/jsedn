@@ -1,23 +1,27 @@
 {
-	"name": "jsedn",
+	"name": "ot-edn",
 
 	"description": "js implementation of edn",
 
-	"version": "0.3.5",
+	"version": "0.3.7",
 
 	"keywords": ["lisp", "clojure", "edn", "serialization", "datomic"],
+
+   "publishConfig": {
+      "registry": "http://artifactory.otenv.com/artifactory/api/npm/npm-local"
+   },
 
 	"maintainers": [{
 		"name": "Shaun Gilchrist",
 		"email": "shaunxcode@gmail.com",
 		"web": "http://order-of-no.posterous.com"
-	}], 
+	}],
 
 	"contributors": [{
 		"name": "Shaun Gilchrist",
 		"email": "shaunxcode@gmail.com",
 		"web": "http://order-of-no.posterous.com"
-	}], 
+	}],
 
 	"bugs": "http://www.github.com/shaunxcode/jsedn/issues",
 
@@ -42,10 +46,10 @@
 		"type-component": "latest",
 		"equals": "latest"
 	},
-	
+
 	"bin": {
 		"jsedn": "./bin/jsedn"
 	},
-	
+
 	"main": "index.js"
 }
