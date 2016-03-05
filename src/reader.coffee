@@ -6,13 +6,39 @@ type = require "./type"
 {handleToken, tokenHandlers} = require "./tokens"
 
 typeClasses = {Map, List, Vector, Set, Discard, Tag, Tagged, StringObj}
-parens = '()[]{}'
-specialChars = parens + ' \t\n\r,'
 escapeChar = '\\'
 parenTypes = 
 	'(' : closing: ')', class: "List"
 	'[' : closing: ']', class: "Vector"
 	'{' : closing: '}', class: "Map"
+
+isParen = (ch) ->
+	return switch ch
+		when '(' then true
+		when ')' then true
+		when '[' then true
+		when ']' then true
+		when '{' then true
+		when '}' then true
+		else false
+
+isCloseParen = (ch) ->
+	return switch ch
+		when ')' then true
+		when ']' then true
+		when '}' then true
+		else false
+
+isSpecialChar = (ch) ->
+	if isParen(ch)
+		return true
+	return switch ch
+		when ' ' then true
+		when '\t' then true
+		when '\r' then true
+		when '\n' then true
+		when ',' then true
+		else false
 
 #based on the work of martin keefe: http://martinkeefe.com/dcpl/sexp_lib.html
 lex = (string) ->
@@ -55,12 +81,12 @@ lex = (string) ->
 					in_string += escapeChar
 
 			in_string += c
-		else if c in specialChars and not escaping?
+		else if not escaping? and isSpecialChar(c)
 			if token
 				list.push token
 				lines.push line 
 				token = ''
-			if c in parens
+			if isParen(c)
 				list.push c
 				lines.push line 
 		else
@@ -102,7 +128,7 @@ read = (ast) ->
 				else 
 					L.push read_ahead token
 
-		else if token in ")]}"
+		else if isCloseParen(token)
 			throw "unexpected #{token} at line #{tokenLines[tokenIndex]}"
 		else
 			handledToken = handleToken token
