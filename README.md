@@ -64,9 +64,26 @@ outputs: :b 0 :kids 2 => :C
 I have developed this in a very test driven manner e.g. each test written before the next feature is implemented. Baring that in mind it means any bugs you find it would be awesome if you could edit the tests adding one which clearly indicates the bug/feature request.
 
 ```bash
-coffee tests/primitives.coffee
+coffee test/primitives.coffee
 ```
-	
+
+For convenience, use *npm* `test` script (by default runs `test/primitives.coffee`):
+
+```bash
+npm test
+...
+[OK] toJS works with nil as null
+[OK] vector should handle nil
+[OK] map should handle nil values
+PASSED: 84/84
+```
+
+To run a specific test (suite):
+
+```bash
+npm test performance-tests
+```
+
 ## API
 #####parse (ednString)
 Will turn a valid edn string into a js object structure based upon the classes details below.
