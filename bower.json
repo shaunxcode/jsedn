@@ -1,0 +1,13 @@
+{
+  "name": "jsedn",
+  "repo": "groy/jsedn",
+  "description": "edn parser, encode/decode for js",
+  "version": "1.0.0",
+  "keywords": ["edn", "clojure", "datomic", "lisp"], 
+  "development": {
+    "component/underscore": "*"
+  },
+  "main": ["jsedn.js",
+    "index.js", 
+    "lib/*"]
+}
