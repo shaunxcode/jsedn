@@ -64,7 +64,7 @@ outputs: :b 0 :kids 2 => :C
 I have developed this in a very test driven manner e.g. each test written before the next feature is implemented. Baring that in mind it means any bugs you find it would be awesome if you could edit the tests adding one which clearly indicates the bug/feature request.
 
 ```bash
-coffee tests/primitives.coffee
+coffee test/primitives.coffee
 ```
 	
 ## API

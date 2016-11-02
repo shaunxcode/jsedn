@@ -1,51 +1,67 @@
 {
-	"name": "jsedn",
-
-	"description": "js implementation of edn",
-
-	"version": "0.3.5",
-
-	"keywords": ["lisp", "clojure", "edn", "serialization", "datomic"],
-
-	"maintainers": [{
-		"name": "Shaun Gilchrist",
-		"email": "shaunxcode@gmail.com",
-		"web": "http://order-of-no.posterous.com"
-	}], 
-
-	"contributors": [{
-		"name": "Shaun Gilchrist",
-		"email": "shaunxcode@gmail.com",
-		"web": "http://order-of-no.posterous.com"
-	}], 
-
-	"bugs": "http://www.github.com/shaunxcode/jsedn/issues",
-
-	"licenses": [{
-		"type": "MIT",
-		"url": "http://www.opensource.org/licenses/mit-license.php"
-	}],
-
-	"repository": {
-		"type": "git",
-		"url": "http://www.github.com/shaunxcode/jsedn"
-	},
-
-	"devDependencies": {
-		"coffee-script": "latest",
-		"underscore": "latest",
-		"microtime": "latest"
-	},
-
-	"dependencies": {
-		"commander": "latest",
-		"type-component": "latest",
-		"equals": "latest"
-	},
-	
-	"bin": {
-		"jsedn": "./bin/jsedn"
-	},
-	
-	"main": "index.js"
+  "name": "jsedn",
+  "description": "js implementation of edn",
+  "version": "0.3.5",
+  "keywords": [
+    "lisp",
+    "clojure",
+    "edn",
+    "serialization",
+    "datomic"
+  ],
+  "maintainers": [
+    {
+      "name": "Shaun Gilchrist",
+      "email": "shaunxcode@gmail.com",
+      "web": "http://order-of-no.posterous.com"
+    }
+  ],
+  "contributors": [
+    {
+      "name": "Shaun Gilchrist",
+      "email": "shaunxcode@gmail.com",
+      "web": "http://order-of-no.posterous.com"
+    }
+  ],
+  "bugs": "http://www.github.com/shaunxcode/jsedn/issues",
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://www.opensource.org/licenses/mit-license.php"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "http://www.github.com/shaunxcode/jsedn"
+  },
+  "devDependencies": {
+    "coffee-script": "latest",
+    "coveralls": "^2.11.14",
+    "microtime": "latest",
+    "nyc": "^8.3.2",
+    "pre-commit": "^1.1.3",
+    "underscore": "latest"
+  },
+  "dependencies": {
+    "commander": "latest",
+    "type-component": "latest",
+    "equals": "latest"
+  },
+  "bin": {
+    "jsedn": "./bin/jsedn"
+  },
+  "scripts": {
+    "test": "nyc --extension .coffee coffee test/primitives.coffee"
+  },
+  "nyc": {
+    "exclude": [
+      "test",
+      "node_modules"
+    ],
+    "reporter": [
+      "lcov",
+      "text-summary"
+    ]
+  },
+  "main": "index.js"
 }
