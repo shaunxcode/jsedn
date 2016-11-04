@@ -13,7 +13,7 @@ encodeHandlers =
 		action: (obj) -> parseFloat obj
 	string:  
 		test: (obj) -> type(obj) is "string"
-		action: (obj) ->  "\"#{obj.toString().replace /"/g, '\\"'}\""
+		action: (obj) ->  "\"#{obj.toString().replace /"|\\/g, '\\$&'}\""
 	boolean: 
 		test: (obj) -> type(obj) is "boolean"
 		action: (obj) -> if obj then "true" else "false"
