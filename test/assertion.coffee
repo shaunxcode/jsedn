@@ -3,6 +3,7 @@ us = require "underscore"
 
 passed = 0
 failed = 0
+skipped = 0
 
 isVal = (val) -> (comp) -> us.isEqual comp, val
 
@@ -40,7 +41,17 @@ assertNotParse = (desc, str) ->
 assertEncode = (desc, obj, pred) ->
 	assert desc, (edn.encode obj), pred
 	
+assertSkip = (desc) ->
+	skipped++
+	console.log "[SKIP]", desc
+
 totalString = -> 
-	"PASSED: #{passed}/#{passed + failed}"
+	"PASSED: #{passed}/#{passed + failed}" +
+	(if skipped then ", SKIPPED: #{skipped}" else "")
+
+logTotals = ->
+	console.log totalString(), "\n"
+	if failed > 0
+		process.exit 1
 	
-module.exports = {isVal, isNotVal, assert, assertParse, assertNotParse, assertEncode, totalString}
+module.exports = {isVal, isNotVal, assert, assertParse, assertNotParse, assertEncode, assertSkip, logTotals}

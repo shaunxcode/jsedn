@@ -1,7 +1,7 @@
 edn = require "../src/reader"
 us = require "underscore"
 
-{isVal, isNotVal, assert, assertParse, assertNotParse, assertEncode, totalString} = require "./assertion"
+{isVal, isNotVal, assert, assertParse, assertNotParse, assertEncode, logTotals} = require "./assertion"
 
 #nil
 # nil represents nil, null or nothing. It should be read as an object with similar meaning on the target platform.
@@ -404,4 +404,4 @@ assert "map should handle nil values",
 	do -> x = x: null; x[null] = null; x
 
 
-console.log totalString()
+logTotals()
