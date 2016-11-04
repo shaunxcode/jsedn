@@ -3,6 +3,11 @@ jsedn
 
 A javascript implementation of [edn](https://github.com/edn-format/edn). To see it in action checkout the [edn playground](https://shaunxcode.github.com/jsedn). If you open your browser console you will have access to a global jsedn object with which you can try things beside JSON encoding. I recommend `jsedn.unify("[?x was always better than ?y]", {x: "sonic", y: "mario"}).jsEncode()`.  
 
+[![Build Status](https://travis-ci.org/shaunxcode/jsedn.svg?branch=master)](https://travis-ci.org/shaunxcode/jsedn)
+[![npm version](https://badge.fury.io/js/jsedn.svg)](https://www.npmjs.com/package/jsedn)
+[![Coverage Status](https://coveralls.io/repos/github/shaunxcode/jsedn/badge.svg?branch=master)](https://coveralls.io/github/shaunxcode/jsedn?branch=master)
+
+
 ## Getting Started
 
 ### Install
@@ -64,7 +69,7 @@ outputs: :b 0 :kids 2 => :C
 I have developed this in a very test driven manner e.g. each test written before the next feature is implemented. Baring that in mind it means any bugs you find it would be awesome if you could edit the tests adding one which clearly indicates the bug/feature request.
 
 ```bash
-coffee tests/primitives.coffee
+coffee test/primitives.coffee
 ```
 	
 ## API
