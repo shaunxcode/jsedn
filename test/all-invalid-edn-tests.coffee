@@ -3,7 +3,7 @@ fs = require "fs"
 equals = require "equals"
 edn = require "../src/reader"
 
-testDir = "./edn-tests/invalid-edn"
+testDir = "./test/edn-tests/invalid-edn"
 
 fs.readdir testDir, (err, files) -> 
 	files.forEach (file) -> 

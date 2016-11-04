@@ -4,6 +4,8 @@ node_js:
   - "4"
   - "6"
   - "7"
+before_script:
+  - git submodule update --init
 after_script:
   - coveralls < coverage/lcov.info
 env:
