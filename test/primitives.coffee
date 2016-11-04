@@ -381,7 +381,7 @@ assertEncode "do not coerce numeric strings into numbers",
 
 assertEncode "encoding stringified json string handles quoting correctly",
 	edn.encode JSON.stringify a: "1"
-	'"\\\"{\\\\"a\\\\":\\\\"1\\\\"}\\\""'
+	'"\\"{\\\\\\"a\\\\\\":\\\\\\"1\\\\\\"}\\""'
 
 assert "json decoding an encoded json stringifed object...",
 	(JSON.parse edn.parse edn.encode JSON.stringify a: "1")
