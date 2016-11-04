@@ -5,14 +5,14 @@ edn = require "../src/reader"
 
 testDir = "./test/edn-tests/performance"
 
-fs.readdir testDir, (err, files) -> 
-	files.forEach (file) -> 
-		fs.readFile "#{testDir}/#{file}", "utf-8", (err, validEdn) ->
-			console.log "Reading #{file}"
-			start = new Date
-			try
-				edn.parse validEdn
-				stop = new Date
-				console.log "Elapsed: #{stop.getTime() - start.getTime()}"
-			catch e
-				console.log "Error reading #{file}", e
+files = fs.readdirSync testDir
+files.forEach (file) -> 
+	validEdn = fs.readFileSync "#{testDir}/#{file}", "utf-8"
+	console.log "Reading #{file}"
+	start = new Date
+	try
+		edn.parse validEdn
+		stop = new Date
+		console.log "Elapsed: #{stop.getTime() - start.getTime()}"
+	catch e
+		console.log "Error reading #{file}", e

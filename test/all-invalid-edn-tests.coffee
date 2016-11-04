@@ -1,16 +1,22 @@
-assertion = require "./assertion"
+{assertNotParse, assertSkip, logTotals} = require "./assertion"
 fs = require "fs"
 equals = require "equals"
 edn = require "../src/reader"
 
 testDir = "./test/edn-tests/invalid-edn"
 
-fs.readdir testDir, (err, files) -> 
-	files.forEach (file) -> 
-		fs.readFile "#{testDir}/#{file}", "utf-8", (err, invalidEdn) ->
-			try
-				r = edn.parse invalidEdn
-				console.log "[FAIL] #{file} was parsed\n\tPARSED: #{invalidEdn}\n\tINTO: #{r}"
-			catch e
-				console.log "[OK] #{invalidEdn} was NOT parsed - which is a good thing\n\tGOT: #{e}"
+skipTests = [
+    "brace-mismatch-nested-2.edn",
+    "curly-unopened.edn",
+    "hash-keyword.edn"
+]
 
+files = fs.readdirSync testDir
+files.forEach (file) ->
+    if skipTests.indexOf(file) == -1
+        invalidEdn = fs.readFileSync "#{testDir}/#{file}", "utf-8"
+        assertNotParse file, invalidEdn
+    else
+        assertSkip file
+
+logTotals()

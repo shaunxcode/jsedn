@@ -1,6 +1,6 @@
 edn = require "../src/reader"
 
-{assert, totalString} = require "./assertion"
+{assert, logTotals} = require "./assertion"
 
 assert "make sure unification works",
 	edn.unify "[?x ?y ?x {?z ?x ?x {?x ?x}}]", x: 1, y: 2, z: 3
@@ -30,4 +30,4 @@ assert "unify can handle updating a vector inside of a tagged value",
 	edn.unify "{:db/id #db/id [:db.part/user ?id] :person/name ?name}", id: -1, name: "franklin"
 	edn.parse "{:db/id #db/id [:db.part/user -1] :person/name \"franklin\"}"
  
-console.log totalString()
+logTotals()

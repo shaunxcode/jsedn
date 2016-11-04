@@ -1,20 +1,17 @@
-assertion = require "./assertion"
+{assert, logTotals} = require "./assertion"
 fs = require "fs"
 equals = require "equals"
 edn = require "../src/reader"
 
 testDir = "./test/edn-tests/valid-edn"
+jsDir = "./test/edn-tests/platforms/js"
 
-fs.readdir "./test/edn-tests/valid-edn", (err, files) -> 
-	files.forEach (file) -> 
-		fs.readFile "#{testDir}/#{file}", "utf-8", (err, validEdn) ->
-			fs.readFile "./test/edn-tests/platforms/js/#{file.split(".").shift()}.js", "utf-8", (err, expectedJs) ->
-				expected = eval "(function(){return #{expectedJs}})()"
-				parsedToJs = edn.toJS edn.parse validEdn
-				correct = equals expected, parsedToJs
-				if expectedJs? 
-					console.log "[#{if correct then "OK" else "ERROR"}] #{file}"
-					if not correct then console.log {file, expectedJs, expected, validEdn, parsedToJs, correct}
-				else
-					console.log "MISSING", file, "for JS: ", validEdn
+files = fs.readdirSync "./test/edn-tests/valid-edn"
+files.forEach (file) -> 
+	validEdn = fs.readFileSync "#{testDir}/#{file}", "utf-8"
+	expectedJs = fs.readFileSync "#{jsDir}/#{file.replace(/\..+$/, '.js')}", "utf-8"
+	expected = eval "(function(){return #{expectedJs}})()"
+	parsedToJs = edn.toJS edn.parse validEdn
+	assert file, parsedToJs, expected
 
+logTotals()
