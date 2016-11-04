@@ -3,12 +3,12 @@ fs = require "fs"
 equals = require "equals"
 edn = require "../src/reader"
 
-testDir = "./edn-tests/valid-edn"
+testDir = "./test/edn-tests/valid-edn"
 
-fs.readdir "./edn-tests/valid-edn", (err, files) -> 
+fs.readdir "./test/edn-tests/valid-edn", (err, files) -> 
 	files.forEach (file) -> 
 		fs.readFile "#{testDir}/#{file}", "utf-8", (err, validEdn) ->
-			fs.readFile "./edn-tests/platforms/js/#{file.split(".").shift()}.js", "utf-8", (err, expectedJs) ->
+			fs.readFile "./test/edn-tests/platforms/js/#{file.split(".").shift()}.js", "utf-8", (err, expectedJs) ->
 				expected = eval "(function(){return #{expectedJs}})()"
 				parsedToJs = edn.toJS edn.parse validEdn
 				correct = equals expected, parsedToJs
