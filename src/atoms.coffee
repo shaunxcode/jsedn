@@ -41,7 +41,7 @@ class Discard
 	
 class Symbol extends Prim
 
-	validRegex: /[0-9A-Za-z.*+!\-_?$%&=:#/]+/
+	validRegex: /[0-9A-Za-z.*+!\-_?$%&=:#></]+/
 
 	invalidFirstChars: [":", "#", "/"] 
 
