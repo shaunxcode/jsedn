@@ -53,7 +53,7 @@ edn.parse(edn.encode({
 ```
 Will output `"electric"`. Definitely working in both directions. 
 
-###Command Line
+### Command Line
 If you have installed via `npm` you will have a jsedn script that accepts input via pipe/stdin. Currently takes:
 
 * `-s` flag for "select" which you pass a path separated by space
@@ -75,21 +75,21 @@ npm test
 ```
 	
 ## API
-#####parse (ednString)
+##### parse (ednString)
 Will turn a valid edn string into a js object structure based upon the classes details below.
 
 ```js
 edn.parse("{:a-keyword! [1 2 -3.4]}");
 ```
 
-#####encode (jsObj)
+##### encode (jsObj)
 Will encode both native JS and any object providing a ednEncode method.
 
 ```js
 edn.encode({"a-keyword!": [1,2,-3.4]});
 ```
 
-#####setTagAction (tag, action)
+##### setTagAction (tag, action)
 Will add the tag action to be performed on any data prepended by said tag.
 
 ```js
@@ -100,21 +100,21 @@ edn.setTagAction(new edn.Tag('myApp', 'tagName'), function(obj) {
 });
 ```
 
-#####setTokenPattern (tokenName, pattern) 
+##### setTokenPattern (tokenName, pattern) 
 If for some reason you would like to over-ride or add a new token pattern. 
 
 ```js
 edn.setTokenPattern()))
 ```
 
-#####setTokenAction (tokenName, actionCallback)
+##### setTokenAction (tokenName, actionCallback)
 Allows for customization of token handling upon match. For instance if you decided you would prefer nil to be represented by undefined instead of null (default).
 
 ```js
 edn.setTokenAction('nil', function(token) { return undefined;});
 ```
 
-#####setTypeClass (type, class)
+##### setTypeClass (type, class)
 This is useful if you want to over-ride the naive implementations of Map etc. 
 
 ```js
@@ -206,7 +206,7 @@ Used to create symbols from with in js for encoding into edn.
 ### Keyword
 As above but for keywords. Note that the constructor enforced that keywords start with a ":" character. 
 
-####Iterable [List Vector Set]
+#### Iterable [List Vector Set]
 List, Vector and Set all implement the following methods:
 
 * `exists (key)` -> boolean indicating existance of key
@@ -216,7 +216,7 @@ List, Vector and Set all implement the following methods:
 * `map (iter)` -> iterate over all members calling iter on each and returning a new instace of self
 * `walk (iter)` -> recursively walk the data returning a new instance of self 
 	
-####Map
+#### Map
 Supports any type of object as key. Supports all of the methods listed for Iterable plus `indexOf` which returns the index of the item, which can be 0 and thus non-truthy. 
 
 `each`, `map` and `walk` all accept a callback which takes the value as the first argument and the key as the second. In the case of map and walk if you want to modify the key you must return a `Pair` object e.g. 
@@ -231,7 +231,7 @@ yields:
 {:x-squared 90000 :y-squared 640000}
 ```
 	
-####Tag
+#### Tag
 Used for defining Tag Actions. Has a constructor which accepts 2..n args where the first arg is your a namespace and the rest are used to categorize the tag. **Tag** provides two methods `ns` and `dn`:
 
 ```js
@@ -245,7 +245,7 @@ Constructor also supports being passed single argument delimited by / e.g:
 new edn.Tag('myApp/people/special/stuff')
 ```
 
-####Tagged
+#### Tagged
 If you do not have tag handlers specified for a given tag you will end up with **Tagged** items in your result which have two methods: 
 
 	tag() -> Tag object found
@@ -263,7 +263,7 @@ outputs:
 #myApp/person {"name" "walter" "age" 300}
 ```
 
-##Conversion Table
+## Conversion Table
 
 | element         | edn                  | jsedn              | js |
 | --------------- | -------------------- | ------------------ | --- |
