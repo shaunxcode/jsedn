@@ -44,8 +44,8 @@
   },
   "dependencies": {
     "commander": "latest",
-    "type-component": "latest",
-    "equals": "latest"
+    "equals": "latest",
+    "type-component": "latest"
   },
   "bin": {
     "jsedn": "./bin/jsedn"
