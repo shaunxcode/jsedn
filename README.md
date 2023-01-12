@@ -53,7 +53,7 @@ edn.parse(edn.encode({
 ```
 Will output `"electric"`. Definitely working in both directions. 
 
-###Command Line
+### Command Line
 If you have installed via `npm` you will have a jsedn script that accepts input via pipe/stdin. Currently takes:
 
 * `-s` flag for "select" which you pass a path separated by space
@@ -75,21 +75,21 @@ npm test
 ```
 	
 ## API
-#####parse (ednString)
+##### parse (ednString)
 Will turn a valid edn string into a js object structure based upon the classes details below.
 
 ```js
 edn.parse("{:a-keyword! [1 2 -3.4]}");
 ```
 
-#####encode (jsObj)
+##### encode (jsObj)
 Will encode both native JS and any object providing a ednEncode method.
 
 ```js
 edn.encode({"a-keyword!": [1,2,-3.4]});
 ```
 
-#####setTagAction (tag, action)
+##### setTagAction (tag, action)
 Will add the tag action to be performed on any data prepended by said tag.
 
 ```js
@@ -100,21 +100,21 @@ edn.setTagAction(new edn.Tag('myApp', 'tagName'), function(obj) {
 });
 ```
 
-#####setTokenPattern (tokenName, pattern) 
+##### setTokenPattern (tokenName, pattern) 
 If for some reason you would like to over-ride or add a new token pattern. 
 
 ```js
 edn.setTokenPattern()))
 ```
 
-#####setTokenAction (tokenName, actionCallback)
+##### setTokenAction (tokenName, actionCallback)
 Allows for customization of token handling upon match. For instance if you decided you would prefer nil to be represented by undefined instead of null (default).
 
 ```js
 edn.setTokenAction('nil', function(token) { return undefined;});
 ```
 
-#####setTypeClass (type, class)
+##### setTypeClass (type, class)
 This is useful if you want to over-ride the naive implementations of Map etc. 
 
 ```js
